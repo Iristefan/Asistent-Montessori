@@ -1,0 +1,6 @@
+{
+  "name": "Assistant Montessori",
+  "description": "Application pédagogique pour assistants et éducateurs Montessori : protocoles d'observation 20h, planificateur de leçons en 5 éléments, Table de Paix et rapports officiels.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
