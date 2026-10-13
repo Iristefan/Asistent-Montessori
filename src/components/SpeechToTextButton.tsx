@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Loader2 } from 'lucide-react';
 import { Language } from '../i18n/translations';
 import { useSpeechToText } from '../hooks/useSpeechToText';
@@ -25,6 +25,7 @@ export const SpeechToTextButton: React.FC<SpeechToTextButtonProps> = ({
 }) => {
   const [activeInterim, setActiveInterim] = useState<string>('');
   const [visibleError, setVisibleError] = useState<string | null>(null);
+  const baseValRef = useRef<string>('');
 
   const {
     isListening,
@@ -42,12 +43,12 @@ export const SpeechToTextButton: React.FC<SpeechToTextButtonProps> = ({
     onResult: (finalSegment, isFinal, fullSessionTranscript) => {
       if (isFinal) {
         setActiveInterim('');
-        const cleanNew = (finalSegment || fullSessionTranscript).trim();
+        const cleanNew = (fullSessionTranscript || finalSegment || '').trim();
         if (!cleanNew) return;
 
         if (mode === 'append') {
-          const trimmedVal = (currentValue || '').trim();
-          const combined = trimmedVal ? `${trimmedVal} ${cleanNew}` : cleanNew;
+          const base = baseValRef.current;
+          const combined = base ? `${base} ${cleanNew}` : cleanNew;
           onTranscript(combined);
         } else {
           onTranscript(cleanNew);
@@ -115,13 +116,14 @@ export const SpeechToTextButton: React.FC<SpeechToTextButtonProps> = ({
     if (isListening) {
       stopListening();
     } else {
+      baseValRef.current = (currentValue || '').trim();
       startListening();
     }
   };
 
   const sizeClasses = {
-    sm: 'w-6 h-6 text-xs',
-    md: 'w-7 h-7 text-xs',
+    sm: 'w-7 h-7 text-xs',
+    md: 'w-8 h-8 text-xs',
     lg: 'px-3 py-1.5 text-xs',
   }[size];
 
@@ -144,26 +146,26 @@ export const SpeechToTextButton: React.FC<SpeechToTextButtonProps> = ({
           onClick={handleClick}
           disabled={isTranscribing}
           title={isTranscribing ? tooltips.transcribing : isListening ? tooltips.listening : tooltips.idle}
-          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer select-none shadow-xs ${
+          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer select-none shadow-xs ${
             isTranscribing
-              ? 'bg-amber-100 text-amber-900 border border-amber-300'
+              ? 'bg-[#FAF7F2] text-[#1F3A2B] border border-[#D4A373]'
               : isListening
-              ? 'bg-red-500 text-white shadow-md ring-2 ring-red-300'
-              : 'bg-[#F4F7F5] hover:bg-[#2E5A44]/10 text-[#2E5A44] border border-[#2E5A44]/20'
+              ? 'bg-[#D4A373] text-[#1F3A2B] border border-[#1F3A2B] shadow-md ring-2 ring-[#D4A373]/40'
+              : 'bg-[#2E5A44] hover:bg-[#1F3A2B] text-white border border-[#1F3A2B]'
           } ${className}`}
         >
           {isTranscribing ? (
             <>
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-700" />
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8C5E28]" />
               <span>{lang === 'fr' ? 'Transcription...' : lang === 'de' ? 'Transkribieren...' : lang === 'en' ? 'Transcribing...' : 'Transcriu...'}</span>
             </>
           ) : isListening ? (
             <>
               <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#1F3A2B] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#1F3A2B]"></span>
               </span>
-              <Mic className="w-3.5 h-3.5 animate-bounce" />
+              <Mic className="w-3.5 h-3.5 animate-bounce text-[#1F3A2B]" />
               <span>
                 {lang === 'fr' ? 'Stop' : lang === 'de' ? 'Stop' : lang === 'en' ? 'Stop' : 'Gata'} ({durationSeconds}s)
               </span>
@@ -177,7 +179,7 @@ export const SpeechToTextButton: React.FC<SpeechToTextButtonProps> = ({
         </button>
 
         {isListening && activeInterim && (
-          <div className="absolute left-0 bottom-full mb-1 z-30 bg-black/85 text-white text-[11px] px-2.5 py-1 rounded shadow-lg whitespace-nowrap italic max-w-xs truncate">
+          <div className="absolute left-0 bottom-full mb-1 z-30 bg-[#1F3A2B] text-white text-[11px] px-2.5 py-1 rounded shadow-lg whitespace-nowrap italic max-w-xs truncate border border-[#D4A373]">
             🎙️ {activeInterim}
           </div>
         )}
@@ -195,29 +197,29 @@ export const SpeechToTextButton: React.FC<SpeechToTextButtonProps> = ({
         aria-label={tooltips.idle}
         className={`inline-flex items-center justify-center rounded-lg transition-all cursor-pointer ${
           isTranscribing
-            ? 'bg-amber-100 text-amber-800 border border-amber-300'
+            ? 'bg-[#FAF7F2] text-[#1F3A2B] border border-[#D4A373]'
             : isListening
-            ? 'bg-red-500 hover:bg-red-600 text-white shadow-md ring-2 ring-red-300 ring-offset-1 scale-105 animate-pulse'
-            : 'bg-white/90 hover:bg-white text-gray-600 hover:text-[#2E5A44] border border-gray-200 hover:border-[#2E5A44]/40 shadow-xs'
+            ? 'bg-[#D4A373] hover:bg-[#c29363] text-[#1F3A2B] border border-[#1F3A2B] shadow-md ring-2 ring-[#D4A373]/40 ring-offset-1 scale-105 animate-pulse'
+            : 'bg-[#2E5A44] hover:bg-[#1F3A2B] text-white border border-[#1F3A2B] shadow-xs'
         } ${sizeClasses} ${className}`}
       >
         {isTranscribing ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-700" />
+          <Loader2 className="w-4 h-4 animate-spin text-[#8C5E28]" />
         ) : isListening ? (
-          <Mic className="w-3.5 h-3.5 text-white animate-bounce" />
+          <Mic className="w-4 h-4 text-[#1F3A2B] animate-bounce" />
         ) : (
-          <Mic className="w-3.5 h-3.5 text-[#2E5A44]" />
+          <Mic className="w-4 h-4 text-[#D4A373]" />
         )}
       </button>
 
       {/* Floating speech bubble while listening */}
       {isListening && (
-        <div className="absolute right-0 bottom-full mb-1.5 z-40 bg-gray-900 text-white text-[11px] px-2.5 py-1 rounded-md shadow-xl whitespace-nowrap flex items-center gap-2 border border-white/20">
+        <div className="absolute right-0 bottom-full mb-1.5 z-40 bg-[#1F3A2B] text-white text-[11px] px-2.5 py-1 rounded-md shadow-xl whitespace-nowrap flex items-center gap-2 border border-[#D4A373]">
           <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4A373] opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D4A373]"></span>
           </span>
-          <span className="font-semibold text-red-200">
+          <span className="font-semibold text-[#D4A373]">
             {lang === 'fr' ? 'Parlez...' : lang === 'de' ? 'Sprechen...' : lang === 'en' ? 'Speak...' : 'Vorbiți...'}
           </span>
           {/* Mini audio level indicator */}
@@ -227,12 +229,12 @@ export const SpeechToTextButton: React.FC<SpeechToTextButtonProps> = ({
                 key={idx}
                 style={{ height: `${(idx + 1) * 33}%` }}
                 className={`w-0.5 rounded-full ${
-                  (audioLevel / 100) >= t ? 'bg-red-400' : 'bg-gray-600'
+                  (audioLevel / 100) >= t ? 'bg-[#D4A373]' : 'bg-white/30'
                 }`}
               />
             ))}
           </div>
-          <span className="font-mono text-[10px] text-gray-400">
+          <span className="font-mono text-[10px] text-white/70">
             {durationSeconds}s
           </span>
         </div>

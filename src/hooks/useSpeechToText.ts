@@ -64,6 +64,7 @@ export function useSpeechToText({
   const isListeningRef = useRef<boolean>(false);
   const restartTimeoutRef = useRef<any>(null);
   const accumulatedTranscriptRef = useRef<string>('');
+  const pastSessionsTranscriptRef = useRef<string>('');
   const interimTranscriptRef = useRef<string>('');
   const webSpeechProducedFinalRef = useRef<boolean>(false);
 
@@ -196,21 +197,16 @@ export function useSpeechToText({
 
       if (text) {
         const prevText = accumulatedTranscriptRef.current.trim();
-        // If webSpeech didn't capture or only captured partial, combine or use Gemini's text
-        let merged = text;
-        if (prevText && !prevText.includes(text) && !text.includes(prevText)) {
-          merged = `${prevText} ${text}`;
-        } else if (text.length >= prevText.length) {
-          merged = text;
-        } else {
-          merged = prevText;
+        // If webSpeech already produced a complete final transcript, do not duplicate
+        if (webSpeechProducedFinalRef.current && prevText.length > 0) {
+          return prevText;
         }
 
-        accumulatedTranscriptRef.current = merged;
-        setTranscript(merged);
+        accumulatedTranscriptRef.current = text;
+        setTranscript(text);
 
         if (onResult) {
-          onResult(text, true, merged);
+          onResult(text, true, text);
         }
         return text;
       }
@@ -244,34 +240,37 @@ export function useSpeechToText({
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
         let currentInterim = '';
-        let newFinalSegment = '';
+        let sessionFinal = '';
 
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
+        for (let i = 0; i < event.results.length; ++i) {
           const item = event.results[i];
+          const textPiece = item[0]?.transcript?.trim() || '';
+          if (!textPiece) continue;
+
           if (item.isFinal) {
-            newFinalSegment += item[0].transcript;
+            sessionFinal = sessionFinal ? `${sessionFinal} ${textPiece}` : textPiece;
           } else {
-            currentInterim += item[0].transcript;
+            currentInterim = currentInterim ? `${currentInterim} ${textPiece}` : textPiece;
           }
         }
 
-        if (newFinalSegment.trim()) {
+        const past = pastSessionsTranscriptRef.current.trim();
+        const fullFinal = past && sessionFinal ? `${past} ${sessionFinal}` : sessionFinal || past;
+
+        if (sessionFinal) {
           webSpeechProducedFinalRef.current = true;
-          const cleanFinal = newFinalSegment.trim();
-          accumulatedTranscriptRef.current = accumulatedTranscriptRef.current
-            ? `${accumulatedTranscriptRef.current} ${cleanFinal}`
-            : cleanFinal;
-          setTranscript(accumulatedTranscriptRef.current);
+          accumulatedTranscriptRef.current = fullFinal;
+          setTranscript(fullFinal);
 
           if (onResult) {
-            onResult(cleanFinal, true, accumulatedTranscriptRef.current);
+            onResult(sessionFinal, true, fullFinal);
           }
         }
 
         interimTranscriptRef.current = currentInterim;
         setInterimTranscript(currentInterim);
         if (currentInterim && onResult) {
-          onResult(currentInterim, false, accumulatedTranscriptRef.current);
+          onResult(currentInterim, false, fullFinal);
         }
       };
 
@@ -305,6 +304,9 @@ export function useSpeechToText({
 
       recognition.onend = () => {
         if (isListeningRef.current && shouldRestartRef.current) {
+          if (accumulatedTranscriptRef.current.trim()) {
+            pastSessionsTranscriptRef.current = accumulatedTranscriptRef.current.trim();
+          }
           clearTimeout(restartTimeoutRef.current);
           restartTimeoutRef.current = setTimeout(() => {
             if (isListeningRef.current && shouldRestartRef.current) {
@@ -332,6 +334,9 @@ export function useSpeechToText({
   // Start listening
   const startListening = useCallback(async () => {
     setErrorMessage(null);
+    pastSessionsTranscriptRef.current = '';
+    accumulatedTranscriptRef.current = '';
+    setTranscript('');
     setInterimTranscript('');
     interimTranscriptRef.current = '';
     webSpeechProducedFinalRef.current = false;
@@ -441,30 +446,26 @@ export function useSpeechToText({
     clearTimeout(restartTimeoutRef.current);
     clearInterval(timerIntervalRef.current);
 
-    // Commit any unfinalized interim text from Web Speech
-    const uncommittedInterim = interimTranscriptRef.current.trim();
-    if (uncommittedInterim) {
-      const updated = accumulatedTranscriptRef.current
-        ? `${accumulatedTranscriptRef.current} ${uncommittedInterim}`
-        : uncommittedInterim;
-      accumulatedTranscriptRef.current = updated;
-      setTranscript(updated);
-      if (onResult) {
-        onResult(uncommittedInterim, true, updated);
-      }
-      interimTranscriptRef.current = '';
-    }
-
     if (recognitionRef.current) {
       try {
         recognitionRef.current.stop();
       } catch {}
     }
 
+    // Only commit unfinalized interim if webSpeech did not already produce final output AND accumulated is empty
+    const uncommittedInterim = interimTranscriptRef.current.trim();
+    if (uncommittedInterim && !webSpeechProducedFinalRef.current && !accumulatedTranscriptRef.current.trim()) {
+      accumulatedTranscriptRef.current = uncommittedInterim;
+      setTranscript(uncommittedInterim);
+      if (onResult) {
+        onResult(uncommittedInterim, true, uncommittedInterim);
+      }
+    }
+    interimTranscriptRef.current = '';
+
     // Stop MediaRecorder
     const recorder = mediaRecorderRef.current;
     if (recorder && recorder.state !== 'inactive') {
-      setIsTranscribing(true);
       await new Promise<void>((resolve) => {
         recorder.onstop = () => resolve();
         try {
@@ -480,8 +481,12 @@ export function useSpeechToText({
     setInterimTranscript('');
     releaseStream();
 
-    // Transcribe with Gemini if audio was captured
-    if (audioChunksRef.current.length > 0) {
+    // Only fallback to server transcription if Web Speech produced zero output
+    if (
+      audioChunksRef.current.length > 0 &&
+      !webSpeechProducedFinalRef.current &&
+      accumulatedTranscriptRef.current.trim().length === 0
+    ) {
       await transcribeAudioChunks();
     }
   }, [releaseStream, transcribeAudioChunks, onResult]);
@@ -497,6 +502,7 @@ export function useSpeechToText({
 
   // Reset transcript
   const resetTranscript = useCallback(() => {
+    pastSessionsTranscriptRef.current = '';
     accumulatedTranscriptRef.current = '';
     interimTranscriptRef.current = '';
     setTranscript('');

@@ -27,18 +27,23 @@ const AUTH_LABELS = {
     submitRegister: 'Créer mon compte et accéder',
     submitting: 'Vérification en cours...',
     adminNoticeTitle: 'Identifiants Fournis par la Direction',
-    adminNoticeDesc: 'Si l\'administrateur (constefan@gmail.com) vous a déjà créé un compte ou attribué des accès exclusifs, saisissez simplement votre adresse e-mail et mot de passe convenu.',
+    adminNoticeDesc: 'Si l\'administrateur (office@stecstudio.ai) vous a déjà créé un compte ou attribué des accès exclusifs, saisissez simplement votre adresse e-mail et mot de passe convenu.',
     featuresTitle: 'Espace Réservé & Protégé :',
-    f1: 'Protocole officiel des 20h d\'observation',
-    f2: 'Plans de leçons structurés selon les 5 éléments',
-    f3: 'Conseiller pédagogique virtuel Maria Montessori (Gemini 3.8 Flash)',
-    f4: 'Export certifié PDF avec en-tête et logo de votre école',
+    f1: 'Conseiller virtuel intelligent pour les éducateurs et assistants Montessori',
+    f2: 'Modules d\'observation',
+    f3: 'Planifications et présentations',
+    f4: 'Pédagogie et philosophie Montessori',
     errors: {
       invalidEmail: 'Adresse e-mail invalide.',
       wrongPassword: 'Mot de passe incorrect ou compte inexistant.',
       emailInUse: 'Cette adresse e-mail est déjà utilisée.',
       weakPassword: 'Le mot de passe doit comporter au moins 6 caractères.',
       popupClosed: 'La fenêtre Google s\'est refermée avant validation.',
+      operationNotAllowed: 'Connexion par e-mail / mot de passe : Veuillez activer le fournisseur "E-mail/Password" dans la console Firebase Auth.',
+      tooManyRequests: 'Trop de tentatives infructueuses. Veuillez patienter quelques minutes avant de réessayer.',
+      networkError: 'Erreur de connexion réseau. Veuillez vérifier votre connexion Internet.',
+      unauthorizedDomain: 'Ce domaine n\'est pas encore autorisé dans Firebase Auth (Authorized Domains).',
+      userDisabled: 'Ce compte utilisateur a été désactivé par l\'administrateur.',
       generic: 'Erreur d\'authentification. Veuillez vérifier vos identifiants.'
     }
   },
@@ -59,18 +64,23 @@ const AUTH_LABELS = {
     submitRegister: 'Creează contul și intră',
     submitting: 'Se verifică...',
     adminNoticeTitle: 'Credențiale Create de Administrator',
-    adminNoticeDesc: 'Dacă administratorul (constefan@gmail.com) v-a creat deja un cont sau v-a furnizat datele de acces, introduceți emailul și parola convenită.',
+    adminNoticeDesc: 'Dacă administratorul (office@stecstudio.ai) v-a creat deja un cont sau v-a furnizat datele de acces, introduceți emailul și parola convenită.',
     featuresTitle: 'Spațiu Protejat & Exclusiv :',
-    f1: 'Protocol oficial 20h de observație',
-    f2: 'Planuri de lecție structurate pe 5 elemente',
-    f3: 'Consilier virtual inteligent Maria Montessori (Gemini 3.8 Flash)',
-    f4: 'Export rapoarte oficiale PDF cu antetul și sigla școlii',
+    f1: 'Consilier virtual inteligent pentru profesorii și asistenții Montessori',
+    f2: 'Module de observare',
+    f3: 'Planificări și prezentări',
+    f4: 'Pedagogia și filozofia Montessori',
     errors: {
       invalidEmail: 'Adresă de email invalidă.',
       wrongPassword: 'Parolă incorectă sau cont inexistent.',
       emailInUse: 'Această adresă de email este deja utilizată.',
       weakPassword: 'Parola trebuie să aibă minimum 6 caractere.',
       popupClosed: 'Fereastra Google a fost închisă înainte de autentificare.',
+      operationNotAllowed: 'Autentificare cu e-mail / parolă: Activați furnizorul „Email/Password” în consola Firebase Authentication.',
+      tooManyRequests: 'Prea multe încercări eșuate. Vă rugăm să așteptați câteva minute și să încercați din nou.',
+      networkError: 'Eroare de rețea. Verificați conexiunea la internet.',
+      unauthorizedDomain: 'Acest domeniu nu este încă autorizat în consola Firebase Auth (Authorized Domains).',
+      userDisabled: 'Acest cont de utilizator a fost dezactivat de administrator.',
       generic: 'Eroare la autentificare. Verificați datele introduse.'
     }
   },
@@ -91,18 +101,23 @@ const AUTH_LABELS = {
     submitRegister: 'Create Account & Access',
     submitting: 'Authenticating...',
     adminNoticeTitle: 'Pre-Provisioned Credentials',
-    adminNoticeDesc: 'If the school director (constefan@gmail.com) created an account for you or shared credentials, enter your email and password above.',
+    adminNoticeDesc: 'If the school director (office@stecstudio.ai) created an account for you or shared credentials, enter your email and password above.',
     featuresTitle: 'Protected & Certified Workspace:',
-    f1: 'Official 20-hour observation protocol',
-    f2: 'Lesson plans structured with the 5 elements',
-    f3: 'Virtual pedagogical guide Maria Montessori (Gemini 3.8 Flash)',
-    f4: 'Official PDF export with school header and emblem',
+    f1: 'Intelligent virtual advisor for Montessori teachers and assistants',
+    f2: 'Observation modules',
+    f3: 'Planning and presentations',
+    f4: 'Montessori pedagogy and philosophy',
     errors: {
       invalidEmail: 'Invalid email address.',
       wrongPassword: 'Wrong password or account not found.',
       emailInUse: 'This email is already in use.',
       weakPassword: 'Password should be at least 6 characters.',
       popupClosed: 'Google sign-in popup was closed.',
+      operationNotAllowed: 'Email / password sign-in: Please enable the "Email/Password" provider in the Firebase Auth console.',
+      tooManyRequests: 'Too many failed attempts. Please wait a few minutes and try again.',
+      networkError: 'Network error. Please check your internet connection.',
+      unauthorizedDomain: 'This domain is not yet authorized in the Firebase Auth console (Authorized Domains).',
+      userDisabled: 'This user account has been disabled by the administrator.',
       generic: 'Authentication failed. Please verify your credentials.'
     }
   },
@@ -123,30 +138,33 @@ const AUTH_LABELS = {
     submitRegister: 'Konto erstellen & Starten',
     submitting: 'Wird überprüft...',
     adminNoticeTitle: 'Vom Administrator erstellte Konten',
-    adminNoticeDesc: 'Falls der Schuladministrator (constefan@gmail.com) bereits ein Konto für Sie angelegt hat, melden Sie sich mit den vereinbarten Daten an.',
+    adminNoticeDesc: 'Falls der Schuladministrator (office@stecstudio.ai) bereits ein Konto für Sie angelegt hat, melden Sie sich mit den vereinbarten Daten an.',
     featuresTitle: 'Geschützter Bereich:',
-    f1: 'Offizielles 20-Stunden Beobachtungsprotokoll',
-    f2: 'Unterrichtspläne nach den 5 Elementen strukturiert',
-    f3: 'Pädagogischer Berater Maria Montessori (Gemini 3.8 Flash)',
-    f4: 'PDF-Export mit Schullogo und offiziellem Briefkopf',
+    f1: 'Intelligenter virtueller Berater für Montessori-Pädagogen und -Assistenten',
+    f2: 'Beobachtungsmodule',
+    f3: 'Planungen und Präsentationen',
+    f4: 'Montessori-Pädagogik und -Philosophie',
     errors: {
       invalidEmail: 'Ungültige E-Mail-Adresse.',
       wrongPassword: 'Falsches Passwort oder Benutzer nicht gefunden.',
       emailInUse: 'Diese E-Mail wird bereits verwendet.',
       weakPassword: 'Passwort muss mindestens 6 Zeichen lang sein.',
       popupClosed: 'Google-Fenster wurde geschlossen.',
+      operationNotAllowed: 'E-Mail-/Passwort-Anmeldung: Bitte aktivieren Sie den Anbieter „E-Mail/Passwort“ in der Firebase Auth-Konsole.',
+      tooManyRequests: 'Zu viele fehlgeschlagene Versuche. Bitte warten Sie einige Minuten und versuchen Sie es erneut.',
+      networkError: 'Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung.',
+      unauthorizedDomain: 'Diese Domain ist in der Firebase Auth-Konsole noch nicht autorisiert (Authorized Domains).',
+      userDisabled: 'Dieses Benutzerkonto wurde vom Administrator deaktiviert.',
       generic: 'Authentifizierungsfehler. Bitte Eingaben prüfen.'
     }
   }
 };
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ currentLang, onLanguageChange }) => {
-  const { loginWithGoogle, loginWithEmail, registerWithEmail } = useAuth();
+  const { loginWithGoogle, loginWithEmail } = useAuth();
 
-  const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -157,18 +175,19 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ currentLang, onLanguageC
 
   const mapAuthError = (err: any) => {
     const code = err?.code || '';
-    const msg = err?.message || '';
     if (code.includes('invalid-email')) return labels.errors.invalidEmail;
     if (code.includes('user-not-found') || code.includes('wrong-password') || code.includes('invalid-credential')) {
       return labels.errors.wrongPassword;
     }
     if (code.includes('email-already-in-use')) return labels.errors.emailInUse;
     if (code.includes('weak-password')) return labels.errors.weakPassword;
-    if (code.includes('popup-closed-by-user')) return labels.errors.popupClosed;
-    if (code.includes('operation-not-allowed')) {
-      return 'Connexion par e-mail / mot de passe : Veuillez activer le fournisseur "E-mail/Password" dans la console Firebase Auth.';
-    }
-    return msg || labels.errors.generic;
+    if (code.includes('popup-closed-by-user') || code.includes('cancelled-popup-request')) return labels.errors.popupClosed;
+    if (code.includes('operation-not-allowed')) return labels.errors.operationNotAllowed;
+    if (code.includes('too-many-requests')) return labels.errors.tooManyRequests;
+    if (code.includes('network-request-failed')) return labels.errors.networkError;
+    if (code.includes('unauthorized-domain')) return labels.errors.unauthorizedDomain;
+    if (code.includes('user-disabled')) return labels.errors.userDisabled;
+    return labels.errors.generic;
   };
 
   const handleGoogleLogin = async () => {
@@ -202,11 +221,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ currentLang, onLanguageC
 
     setIsLoading(true);
     try {
-      if (mode === 'login') {
-        await loginWithEmail(email.trim(), password);
-      } else {
-        await registerWithEmail(email.trim(), password, name);
-      }
+      await loginWithEmail(email.trim(), password);
     } catch (err: any) {
       console.error('Email auth error:', err);
       setErrorMsg(mapAuthError(err));
@@ -228,7 +243,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ currentLang, onLanguageC
               {t.appName}
             </h1>
             <p className="text-xs text-stone-500 font-sans">
-              Portail de Sécurité & Authentification
+              {currentLang === 'ro'
+                ? 'Portal de Securitate & Autentificare'
+                : currentLang === 'en'
+                ? 'Security & Authentication Portal'
+                : currentLang === 'de'
+                ? 'Sicherheits- & Authentifizierungsportal'
+                : 'Portail de Sécurité & Authentification'}
             </p>
           </div>
         </div>
@@ -251,7 +272,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ currentLang, onLanguageC
           <div className="md:col-span-5 flex flex-col gap-6 text-stone-800 order-2 md:order-1">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium w-fit">
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              <span>Accès Sécurisé par Google Firebase</span>
+              <span>
+                {currentLang === 'ro'
+                  ? 'Acces Securizat prin Google Firebase'
+                  : currentLang === 'en'
+                  ? 'Secured by Google Firebase'
+                  : currentLang === 'de'
+                  ? 'Gesicherter Zugang über Google Firebase'
+                  : 'Accès Sécurisé par Google Firebase'}
+              </span>
             </div>
 
             <div>
@@ -259,7 +288,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ currentLang, onLanguageC
                 {labels.portalTitle}
               </h2>
               <p className="text-sm text-stone-600 mt-2 font-serif italic">
-                « Aide-moi à faire seul. » — Maria Montessori
+                {currentLang === 'ro'
+                  ? '„Ajută-mă să fac singur.” — Maria Montessori'
+                  : currentLang === 'en'
+                  ? '“Help me to do it myself.” — Maria Montessori'
+                  : currentLang === 'de'
+                  ? '„Hilf mir, es selbst zu tun.“ — Maria Montessori'
+                  : '« Aide-moi à faire seul. » — Maria Montessori'}
               </p>
             </div>
 
@@ -299,30 +334,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ currentLang, onLanguageC
 
           {/* Right Column: Authentication Card */}
           <div className="md:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-xl shadow-stone-200/50 order-1 md:order-2">
-            {/* Tab switch between Sign In and Sign Up */}
+            {/* Sign In Header */}
             <div className="flex p-1 bg-stone-100 rounded-xl mb-6">
-              <button
-                type="button"
-                onClick={() => { setMode('login'); setErrorMsg(null); }}
-                className={`flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all ${
-                  mode === 'login'
-                    ? 'bg-white text-stone-900 shadow-sm'
-                    : 'text-stone-500 hover:text-stone-800'
-                }`}
-              >
+              <div className="flex-1 py-2.5 text-xs font-semibold rounded-lg bg-white text-stone-900 shadow-sm text-center">
                 {labels.signInTab}
-              </button>
-              <button
-                type="button"
-                onClick={() => { setMode('register'); setErrorMsg(null); }}
-                className={`flex-1 py-2.5 text-xs font-semibold rounded-lg transition-all ${
-                  mode === 'register'
-                    ? 'bg-white text-stone-900 shadow-sm'
-                    : 'text-stone-500 hover:text-stone-800'
-                }`}
-              >
-                {labels.signUpTab}
-              </button>
+              </div>
             </div>
 
             {/* Error & Success Messages */}
@@ -379,24 +395,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ currentLang, onLanguageC
 
             {/* Email / Password Form */}
             <form onSubmit={handleEmailAuth} className="space-y-4">
-              {mode === 'register' && (
-                <div>
-                  <label className="block text-xs font-semibold text-stone-700 mb-1.5">
-                    {labels.nameLabel}
-                  </label>
-                  <div className="relative">
-                    <User className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder={labels.namePlaceholder}
-                      className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 text-sm text-stone-900 bg-stone-50/50"
-                    />
-                  </div>
-                </div>
-              )}
-
               <div>
                 <label className="block text-xs font-semibold text-stone-700 mb-1.5">
                   {labels.emailLabel}
@@ -450,7 +448,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ currentLang, onLanguageC
                   </span>
                 ) : (
                   <>
-                    <span>{mode === 'login' ? labels.submitLogin : labels.submitRegister}</span>
+                    <span>{labels.submitLogin}</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -462,7 +460,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ currentLang, onLanguageC
 
       {/* Footer */}
       <footer className="w-full py-4 text-center text-xs text-stone-500 border-t border-stone-200 bg-stone-100">
-        Assistant Montessori •{' '}
+        {t.appName} •{' '}
         {currentLang === 'fr'
           ? 'basé sur les principes du modèle éducatif Montessori • Accès sécurisé'
           : currentLang === 'en'

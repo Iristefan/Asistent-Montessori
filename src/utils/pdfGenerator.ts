@@ -176,8 +176,16 @@ export function generateUserManualPdf(manual: UserManualContent, lang: Language)
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7.5);
       doc.setTextColor(120, 130, 140);
+      const runningHeader =
+        lang === 'fr'
+          ? "Assistant Montessori • L'École des Préalpes • Guide d'Utilisation"
+          : lang === 'en'
+          ? "Montessori Assistant • L'École des Préalpes • User Manual"
+          : lang === 'de'
+          ? "Montessori Assistent • L'École des Préalpes • Benutzerhandbuch"
+          : "Asistent Montessori • L'École des Préalpes • Manual de Utilizare";
       doc.text(
-        sanitizeForJsPdf("Assistant Montessori • L'École des Préalpes • Manual de Utilizare"),
+        sanitizeForJsPdf(runningHeader),
         marginX,
         11
       );

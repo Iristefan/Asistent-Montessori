@@ -259,12 +259,12 @@ export const PrintAiModal: React.FC<PrintAiModalProps> = ({
               </h2>
               <p className="text-xs text-gray-500 mt-1">
                 {lang === 'fr'
-                  ? 'Généré via Google Gemini 3.8 Flash, basé sur les principes du modèle éducatif Montessori'
+                  ? 'Basé sur les principes du modèle éducatif Montessori'
                   : lang === 'en'
-                  ? 'Generated via Google Gemini 3.8 Flash, based on the principles of the Montessori educational model'
+                  ? 'Based on the principles of the Montessori educational model'
                   : lang === 'de'
-                  ? 'Erstellt mit Google Gemini 3.8 Flash, basierend auf den Prinzipien des Montessori-Bildungsmodells'
-                  : 'Generat prin Google Gemini 3.8 Flash, bazat pe principiile modelului educațional Montessori'}
+                  ? 'Basierend auf den Prinzipien des Montessori-Bildungsmodells'
+                  : 'Bazat pe principiile modelului educațional Montessori'}
               </p>
             </div>
 

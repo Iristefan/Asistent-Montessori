@@ -4,7 +4,12 @@ import { Language, UI_TRANSLATIONS } from '../i18n/translations';
 import { getLocalizedObservation, getLocalizedLessonPlan } from '../data/multilingualDefaults';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { SchoolLogo } from './SchoolLogo';
-import { Printer, X } from 'lucide-react';
+import { Printer, X, Download } from 'lucide-react';
+import {
+  exportLessonPlanToPdf,
+  exportObservationReportToPdf,
+  exportWeeklyReportToPdf,
+} from '../utils/reportPdfExport';
 
 interface PrintReportModalProps {
   isOpen: boolean;
@@ -50,12 +55,29 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
   const selectedLesson =
     localizedLessons.find((l) => l.id === selectedLessonId) || localizedLessons[0];
 
+  const handleDownloadPdf = () => {
+    if (reportType === 'lesson') {
+      if (!selectedLesson) return;
+      exportLessonPlanToPdf({ plan: selectedLesson, institution: config, lang });
+    } else if (reportType === 'observation') {
+      if (!selectedObs) return;
+      exportObservationReportToPdf({ observation: selectedObs, institution: config, lang });
+    } else {
+      exportWeeklyReportToPdf({
+        observations: localizedObservations,
+        lessonPlans: localizedLessons,
+        institution: config,
+        lang,
+      });
+    }
+  };
+
   const REPORT_TITLES = {
     ro: {
       obsTitle: 'RAPORT DE OBSERVAȚIE MONTESSORI',
-      obsSub: 'Protocolul celor 20 de Ore de Observație Practică (bazat pe principiile modelului educațional Montessori)',
-      lessonTitle: 'FIȘĂ DE LECȚIE MONTESSORI',
-      lessonSub: 'Modelul celor 5 Elemente de Planificare (bazat pe principiile modelului educațional Montessori)',
+      obsSub: 'Protocolul zilnic de Observație Practică (bazat pe principiile modelului educațional Montessori)',
+      lessonTitle: 'PLAN DE PREZENTARE MONTESSORI',
+      lessonSub: 'Planificator de prezentări (bazat pe principiile modelului educațional Montessori)',
       weeklyTitle: 'RAPORT SĂPTĂMÂNAL ASISTENT MONTESSORI',
       school: 'Școală / Clasă:',
       date: 'Data:',
@@ -67,28 +89,26 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
       notesHeading: '1. Note Obiective de Observație (la intervale de 5 min / Fapte concrete):',
       reflectionHeading: '2. Reflecția Personală a Asistentului / Ghidului:',
       aiHeading: '3. Evaluare Pedagogică & Validare Obiectivitate (Gemini AI):',
-      coreTitle: '1. Titlul Lecției:',
-      subjectLevel: 'Domeniu & Nivel:',
-      albumRef: '2. Referință Album:',
-      aim: '3. Scop Direct (Direct Aim):',
-      indirectAims: 'Scopuri Indirecte:',
-      hotsHeading: '4. Întrebări de Gândire de Nivel Superior (HOTS):',
-      hots1: 'A. Analiză / Comparare:',
-      hots2: 'B. Evaluare / Creație:',
-      followHeading: '5. Activități de Urmare (Follow-up Work - Două Opțiuni Echilibrate):',
-      followA: 'Opțiunea A (Practică & Replicare):',
-      followB: 'Opțiunea B (Aplicație & Creație):',
-      materials: 'Materiale Necesare:',
-      poi: 'Punct de Interes:',
+      coreTitle: '1. Titlul Prezentării:',
+      subjectDomain: 'Domeniu de activitate:',
+      ageGroup: 'Grupa de vârstă:',
+      duration: 'Timpul alocat:',
+      materials: 'Material necesar pentru prezentare:',
+      poi: 'Punct de interes:',
+      directAim: 'Obiectiv direct (Direct Aim):',
+      indirectAim: 'Obiectiv indirect (Indirect Aim):',
+      procedureHeading: 'Desfășurare lecție (Pași de prezentare):',
+      followUpHeading: 'Propuneri de activități de urmare (Follow-up work):',
+      crossCurricularHeading: 'Propuneri de follow-up transdisciplinar:',
       principlesTitle: '1. Principiile de Bază ale Asistentului Montessori:',
       obsSectionTitle: '2. Situația Observațiilor Înregistrate:',
-      lessonSectionTitle: '3. Lecții Planificate conform celor 5 Elemente:',
+      lessonSectionTitle: '3. Prezentări Planificate:',
     },
     fr: {
       obsTitle: "RAPPORT D'OBSERVATION MONTESSORI",
-      obsSub: 'Protocole des 20 Heures d’Observation Pratique (basé sur les principes du modèle éducatif Montessori)',
-      lessonTitle: 'FICHE DE LEÇON MONTESSORI',
-      lessonSub: 'Modèle des 5 Éléments de Planification (basé sur les principes du modèle éducatif Montessori)',
+      obsSub: 'Protocole quotidien d’Observation Pratique (basé sur les principes du modèle éducatif Montessori)',
+      lessonTitle: 'PLAN DE PRÉSENTATION MONTESSORI',
+      lessonSub: 'Planificateur de présentations (basé sur les principes du modèle éducatif Montessori)',
       weeklyTitle: 'RAPPORT HEBDOMADAIRE ASSISTANT MONTESSORI',
       school: 'Établissement / Classe:',
       date: 'Date:',
@@ -100,28 +120,26 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
       notesHeading: '1. Notes Factuelles d’Observation (Intervalles de 5 min / Faits bruts):',
       reflectionHeading: '2. Réflexion Personnelle de l’Assistant / Éducateur:',
       aiHeading: '3. Évaluation Pédagogique & Validation d’Objectivité (Gemini IA):',
-      coreTitle: '1. Titre de la Leçon:',
-      subjectLevel: 'Domaine & Niveau:',
-      albumRef: '2. Référence d’Album:',
-      aim: '3. But Direct (Direct Aim):',
-      indirectAims: 'Buts Indirects:',
-      hotsHeading: '4. Questions de Pensée Supérieure (HOTS):',
-      hots1: 'A. Analyse / Comparaison:',
-      hots2: 'B. Évaluation / Création / Transfert:',
-      followHeading: '5. Travaux de Suivi (Follow-up Work - Deux Options Équilibrées):',
-      followA: 'Option A (Pratique & Réplication avec le Matériel):',
-      followB: 'Option B (Application Créative & Extension):',
-      materials: 'Matériel Requis:',
-      poi: 'Point d’Intérêt:',
+      coreTitle: '1. Titre de la Présentation :',
+      subjectDomain: 'Domaine d’activité :',
+      ageGroup: 'Groupe d’âge :',
+      duration: 'Temps alloué :',
+      materials: 'Matériel requis pour la présentation :',
+      poi: 'Point d’intérêt :',
+      directAim: 'Objectif direct (Direct Aim) :',
+      indirectAim: 'Objectif indirect (Indirect Aim) :',
+      procedureHeading: 'Déroulement de la leçon (Étapes de présentation) :',
+      followUpHeading: 'Propositions de travail de suivi (Follow-up work) :',
+      crossCurricularHeading: 'Propositions de travail de suivi transdisciplinaire :',
       principlesTitle: '1. Principes Directeurs de l’Assistant Montessori:',
       obsSectionTitle: '2. Récapitulatif des Observations Enregistrées:',
-      lessonSectionTitle: '3. Leçons Planifiées selon les 5 Éléments :',
+      lessonSectionTitle: '3. Présentations Planifiées :',
     },
     en: {
       obsTitle: 'MONTESSORI OBSERVATION REPORT',
-      obsSub: '20-Hour Practical Observation Protocol (based on the principles of the Montessori educational model)',
-      lessonTitle: 'MONTESSORI LESSON PLAN',
-      lessonSub: 'The 5-Element Planning Model (based on the principles of the Montessori educational model)',
+      obsSub: 'Daily Practical Observation Protocol (based on the principles of the Montessori educational model)',
+      lessonTitle: 'MONTESSORI PRESENTATION PLAN',
+      lessonSub: 'Presentations Planner (based on the principles of the Montessori educational model)',
       weeklyTitle: 'MONTESSORI ASSISTANT WEEKLY REPORT',
       school: 'School / Class:',
       date: 'Date:',
@@ -133,28 +151,26 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
       notesHeading: '1. Objective Observation Notes (5-min intervals / concrete factual data):',
       reflectionHeading: '2. Personal Reflection of the Assistant / Guide:',
       aiHeading: '3. Pedagogical Evaluation & Objectivity Check (Gemini AI):',
-      coreTitle: '1. Lesson Title:',
-      subjectLevel: 'Subject & Level:',
-      albumRef: '2. Album Reference:',
-      aim: '3. Direct Aim:',
-      indirectAims: 'Indirect Aims:',
-      hotsHeading: '4. Higher Order Thinking Skills Questions (HOTS):',
-      hots1: 'A. Analysis / Comparison:',
-      hots2: 'B. Evaluation / Creation / Transfer:',
-      followHeading: '5. Follow-up Work (Two Balanced Options):',
-      followA: 'Option A (Practice & Material Replication):',
-      followB: 'Option B (Creative Application & Extension):',
-      materials: 'Materials Needed:',
+      coreTitle: '1. Presentation Title:',
+      subjectDomain: 'Area of Activity / Subject:',
+      ageGroup: 'Age Group:',
+      duration: 'Allocated Time / Duration:',
+      materials: 'Required Presentation Materials:',
       poi: 'Point of Interest:',
+      directAim: 'Direct Aim:',
+      indirectAim: 'Indirect Aim:',
+      procedureHeading: 'Lesson Procedure (Presentation Steps):',
+      followUpHeading: 'Follow-up Work Proposals:',
+      crossCurricularHeading: 'Cross-Curricular Follow-up Proposals:',
       principlesTitle: '1. Core Principles of the Montessori Assistant:',
       obsSectionTitle: '2. Recorded Observation Sessions Summary:',
-      lessonSectionTitle: '3. Planned Presentations (5 Elements):',
+      lessonSectionTitle: '3. Planned Presentations:',
     },
     de: {
       obsTitle: 'MONTESSORI BEOBACHTUNGSBERICHT',
-      obsSub: 'Protokoll der 20 Praktischen Beobachtungsstunden (basierend auf den Prinzipien des Montessori-Bildungsmodells)',
-      lessonTitle: 'MONTESSORI UNTERRICHTSPLAN',
-      lessonSub: 'Das 5-Elemente-Planungsmodell (basierend auf den Prinzipien des Montessori-Bildungsmodells)',
+      obsSub: 'Tägliches praktisches Beobachtungsprotokoll (basierend auf den Prinzipien des Montessori-Bildungsmodells)',
+      lessonTitle: 'MONTESSORI DARBIETUNGSPLAN',
+      lessonSub: 'Darbietungsplaner (basierend auf den Prinzipien des Montessori-Bildungsmodells)',
       weeklyTitle: 'MONTESSORI-ASSISTENT WOCHENBERICHT',
       school: 'Schule / Gruppe:',
       date: 'Datum:',
@@ -167,27 +183,25 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
       reflectionHeading: '2. Persönliche Reflexion des Assistenten / Pädagogen:',
       aiHeading: '3. Pädagogische Auswertung & Objektivitätsprüfung (Gemini KI):',
       coreTitle: '1. Titel der Darbietung:',
-      subjectLevel: 'Fachbereich & Stufe:',
-      albumRef: '2. Album-Referenz:',
-      aim: '3. Direktes Ziel (Direct Aim):',
-      indirectAims: 'Indirekte Ziele:',
-      hotsHeading: '4. Fragen Höherer Denkordnung (HOTS):',
-      hots1: 'A. Analyse / Vergleich:',
-      hots2: 'B. Bewertung / Schöpfung / Transfer:',
-      followHeading: '5. Folgearbeiten (Zwei Ausgewogene Optionen):',
-      followA: 'Option A (Praxis & Replikation):',
-      followB: 'Option B (Kreative Anwendung):',
-      materials: 'Benötigte Materialien:',
+      subjectDomain: 'Fachbereich:',
+      ageGroup: 'Altersgruppe:',
+      duration: 'Zeitaufwand:',
+      materials: 'Erforderliche Materialien:',
       poi: 'Punkt des Interesses:',
+      directAim: 'Direktes Ziel (Direct Aim):',
+      indirectAim: 'Indirektes Ziel (Indirect Aim):',
+      procedureHeading: 'Ablauf der Darbietung (Präsentationsschritte):',
+      followUpHeading: 'Vorschläge für Folgearbeiten (Follow-up work):',
+      crossCurricularHeading: 'Fächerübergreifende Folgearbeiten:',
       principlesTitle: '1. Grundhaltungen des Montessori-Assistenten:',
       obsSectionTitle: '2. Erfasste Beobachtungssitzungen:',
-      lessonSectionTitle: '3. Geplante Darbietungen (5 Elemente):',
+      lessonSectionTitle: '3. Geplante Darbietungen:',
     },
   }[lang];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+    <div className="print-modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto print:static print:inset-auto print:p-0 print:bg-white print:overflow-visible print:block print:z-auto">
+      <div className="print-modal-card relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden print:static print:max-h-none print:w-full print:max-w-none print:shadow-none print:border-none print:overflow-visible print:block print:rounded-none">
         {/* Modal Toolbar (hidden during window.print()) */}
         <div className="no-print p-4 bg-[#1F3A2B] text-white flex flex-wrap items-center justify-between gap-3 border-b border-[#2E5A44]">
           <div className="flex items-center gap-2">
@@ -250,12 +264,42 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
               </button>
             </div>
 
+            {/* Direct Download PDF Button (jsPDF multi-page export) */}
+            <button
+              type="button"
+              onClick={handleDownloadPdf}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#2E5A44] hover:bg-[#234534] text-white font-bold text-xs rounded-lg shadow border border-[#D4A373]/50 transition-colors cursor-pointer"
+              title="Descarcă fișierul PDF oficial complet cu toate paginile"
+            >
+              <Download className="w-4 h-4 text-[#D4A373]" />
+              <span>
+                {lang === 'fr'
+                  ? 'Télécharger PDF (.pdf)'
+                  : lang === 'en'
+                  ? 'Download PDF (.pdf)'
+                  : lang === 'de'
+                  ? 'PDF Herunterladen (.pdf)'
+                  : 'Descarcă Fișier PDF (.pdf)'}
+              </span>
+            </button>
+
+            {/* Browser Print Button (multi-page print preview) */}
             <button
               type="button"
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-[#D4A373] hover:bg-[#c29363] text-[#1F3A2B] font-bold text-xs rounded-lg shadow transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#D4A373] hover:bg-[#c29363] text-[#1F3A2B] font-bold text-xs rounded-lg shadow transition-colors cursor-pointer"
+              title="Previzualizare tipărire browser pe toate paginile"
             >
-              <Printer className="w-4 h-4" /> {tp.printSavePdf}
+              <Printer className="w-4 h-4" />
+              <span>
+                {lang === 'fr'
+                  ? 'Imprimer (Toutes pages)'
+                  : lang === 'en'
+                  ? 'Print (All pages)'
+                  : lang === 'de'
+                  ? 'Drucken (Alle Seiten)'
+                  : 'Tipărește (Toate paginile)'}
+              </span>
             </button>
 
             <button
@@ -311,15 +355,15 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
           )}
 
           <span className="text-[11px] text-gray-500 hidden sm:inline">
-            💡 Save as PDF
+            📄 Toate paginile și secțiunile sunt exportate integral fără limitare
           </span>
         </div>
 
         {/* Printable Paper Area */}
-        <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100 flex justify-center">
+        <div className="print-modal-scroll flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100 flex justify-center print:static print:overflow-visible print:p-0 print:bg-white print:block">
           <div
             id="printable-report-content"
-            className="w-full max-w-[800px] bg-white p-8 md:p-10 shadow-md border border-gray-300 text-gray-900 font-sans print:shadow-none print:border-none print:p-0 print:m-0"
+            className="w-full max-w-[800px] bg-white p-8 md:p-10 shadow-md border border-gray-300 text-gray-900 font-sans print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:w-full print:block"
           >
             {/* Institutional Header Banner */}
             <div className="flex items-center gap-4 p-4 rounded-xl border border-[#2E5A44] bg-[#F4F7F5] mb-6">
@@ -441,7 +485,7 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
               </div>
             )}
 
-            {/* REPORT 2: LESSON PLAN */}
+            {/* REPORT 2: PRESENTATION PLAN */}
             {reportType === 'lesson' && selectedLesson && (
               <div>
                 <div className="mb-4">
@@ -454,92 +498,98 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
                   <div className="w-full h-0.5 bg-[#2E5A44] mt-2 mb-4" />
                 </div>
 
-                {/* Core Lesson Info Table */}
-                <div className="border border-[#2E5A44]/40 rounded-lg overflow-hidden text-xs mb-4">
+                {/* Core Presentation Info Table */}
+                <div className="border border-[#2E5A44]/40 rounded-lg overflow-hidden text-xs mb-4 print-avoid-break break-inside-avoid">
                   <div className="grid grid-cols-3 bg-[#F4F7F5] border-b border-gray-200 p-2.5">
                     <span className="font-bold text-[#2E5A44]">{REPORT_TITLES.coreTitle}</span>
-                    <span className="col-span-2 font-semibold text-gray-900 text-sm">
+                    <span className="col-span-2 font-bold text-gray-900 text-sm">
                       {selectedLesson.title}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 border-b border-gray-200 p-2.5">
-                    <span className="font-bold text-[#2E5A44]">{REPORT_TITLES.subjectLevel}</span>
-                    <span className="col-span-2 text-gray-800">
-                      {selectedLesson.subject} | {selectedLesson.level}
+                    <span className="font-bold text-[#2E5A44]">{REPORT_TITLES.subjectDomain}</span>
+                    <span className="col-span-2 text-gray-800 font-medium">
+                      {selectedLesson.subject}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 border-b border-gray-200 p-2.5">
-                    <span className="font-bold text-[#2E5A44]">{REPORT_TITLES.albumRef}</span>
-                    <span className="col-span-2 text-gray-800 font-mono text-[11px]">
-                      {selectedLesson.albumRef}
+                    <span className="font-bold text-[#2E5A44]">{REPORT_TITLES.ageGroup}</span>
+                    <span className="col-span-2 text-gray-800 font-medium">
+                      {selectedLesson.ageGroup || selectedLesson.level}
                     </span>
                   </div>
-                  <div className="grid grid-cols-3 p-2.5 bg-[#F4F7F5]">
-                    <span className="font-bold text-[#2E5A44]">{REPORT_TITLES.aim}</span>
-                    <span className="col-span-2 text-gray-800 font-medium">
-                      {selectedLesson.directAim}
-                    </span>
+                  {selectedLesson.duration && (
+                    <div className="grid grid-cols-3 border-b border-gray-200 p-2.5">
+                      <span className="font-bold text-[#2E5A44]">{REPORT_TITLES.duration}</span>
+                      <span className="col-span-2 text-gray-800">
+                        {selectedLesson.duration}
+                      </span>
+                    </div>
+                  )}
+                  {selectedLesson.materials && (
+                    <div className="grid grid-cols-3 border-b border-gray-200 p-2.5">
+                      <span className="font-bold text-[#2E5A44]">{REPORT_TITLES.materials}</span>
+                      <span className="col-span-2 text-gray-800">
+                        {selectedLesson.materials}
+                      </span>
+                    </div>
+                  )}
+                  {selectedLesson.pointOfInterest && (
+                    <div className="grid grid-cols-3 p-2.5 bg-[#F4F7F5]">
+                      <span className="font-bold text-[#2E5A44]">{REPORT_TITLES.poi}</span>
+                      <span className="col-span-2 text-gray-800 italic">
+                        {selectedLesson.pointOfInterest}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Direct & Indirect Aims */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 text-xs print-avoid-break break-inside-avoid">
+                  <div className="p-3 bg-[#F4F7F5] border-l-4 border-l-[#2E5A44] border-t border-r border-b border-gray-200 rounded">
+                    <span className="font-bold text-[#2E5A44] block mb-1">{REPORT_TITLES.directAim}</span>
+                    <p className="text-gray-800 leading-relaxed">{selectedLesson.directAim}</p>
+                  </div>
+                  <div className="p-3 bg-[#F4F7F5] border-l-4 border-l-[#D4A373] border-t border-r border-b border-gray-200 rounded">
+                    <span className="font-bold text-[#1F3A2B] block mb-1">{REPORT_TITLES.indirectAim}</span>
+                    <p className="text-gray-800 leading-relaxed">{selectedLesson.indirectAim || selectedLesson.indirectAims || '-'}</p>
                   </div>
                 </div>
 
-                {selectedLesson.indirectAims && (
-                  <div className="mb-4 p-2.5 bg-gray-50 border border-gray-200 rounded text-xs">
-                    <span className="font-bold text-[#4A6B5D]">{REPORT_TITLES.indirectAims} </span>
-                    <span className="text-gray-700">{selectedLesson.indirectAims}</span>
+                {/* Lesson Procedure (Bullet Points) */}
+                {selectedLesson.procedure && (
+                  <div className="mb-4">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-[#1F3A2B] mb-2 print-avoid-break">
+                      {REPORT_TITLES.procedureHeading}
+                    </h3>
+                    <div className="p-3 bg-white border border-gray-200 rounded text-xs space-y-2 leading-relaxed text-gray-800">
+                      {selectedLesson.procedure.split('\n').map((line, idx) => {
+                        const clean = line.replace(/^[•\-\*\d+\.]\s*/, '').trim();
+                        if (!clean) return null;
+                        return (
+                          <div key={idx} className="flex items-start gap-2 print-avoid-break break-inside-avoid">
+                            <span className="text-[#2E5A44] font-bold mt-0.5">•</span>
+                            <span className="flex-1">{clean}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
 
-                {/* HOTS Questions */}
-                <div className="mb-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#1F3A2B] mb-2">
-                    {REPORT_TITLES.hotsHeading}
-                  </h3>
-                  <div className="border border-gray-300 rounded overflow-hidden text-xs">
-                    <div className="grid grid-cols-3 p-2.5 border-b border-gray-200 bg-white">
-                      <span className="font-bold text-gray-800">{REPORT_TITLES.hots1}</span>
-                      <span className="col-span-2 text-gray-700 italic">{selectedLesson.hots1}</span>
-                    </div>
-                    <div className="grid grid-cols-3 p-2.5 bg-[#F4F7F5]">
-                      <span className="font-bold text-gray-800">{REPORT_TITLES.hots2}</span>
-                      <span className="col-span-2 text-gray-700 italic">{selectedLesson.hots2}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Follow-up Work */}
-                <div className="mb-5">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-[#1F3A2B] mb-2">
-                    {REPORT_TITLES.followHeading}
-                  </h3>
+                {/* Follow-up Work & Cross-Curricular Proposals */}
+                <div className="mb-5 print-avoid-break break-inside-avoid">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                     <div className="p-3 bg-[#F4F7F5] border-l-4 border-l-[#2E5A44] border-t border-r border-b border-gray-200 rounded">
-                      <p className="font-bold text-[#2E5A44] mb-1">{REPORT_TITLES.followA}</p>
-                      <p className="text-gray-800">{selectedLesson.follow1}</p>
+                      <p className="font-bold text-[#2E5A44] mb-1">{REPORT_TITLES.followUpHeading}</p>
+                      <p className="text-gray-800 leading-relaxed">{selectedLesson.followUpWork || selectedLesson.follow1 || '-'}</p>
                     </div>
                     <div className="p-3 bg-[#F4F7F5] border-l-4 border-l-[#D4A373] border-t border-r border-b border-gray-200 rounded">
-                      <p className="font-bold text-[#1F3A2B] mb-1">{REPORT_TITLES.followB}</p>
-                      <p className="text-gray-800">{selectedLesson.follow2}</p>
+                      <p className="font-bold text-[#1F3A2B] mb-1">{REPORT_TITLES.crossCurricularHeading}</p>
+                      <p className="text-gray-800 leading-relaxed">{selectedLesson.crossCurricular || selectedLesson.follow2 || '-'}</p>
                     </div>
                   </div>
                 </div>
-
-                {/* Materials & Point of Interest */}
-                {(selectedLesson.materials || selectedLesson.pointOfInterest) && (
-                  <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 border border-gray-200 rounded text-xs mb-4">
-                    {selectedLesson.materials && (
-                      <div>
-                        <span className="font-bold text-gray-700">{REPORT_TITLES.materials} </span>
-                        <p className="text-gray-600 mt-0.5">{selectedLesson.materials}</p>
-                      </div>
-                    )}
-                    {selectedLesson.pointOfInterest && (
-                      <div>
-                        <span className="font-bold text-gray-700">{REPORT_TITLES.poi} </span>
-                        <p className="text-gray-600 mt-0.5 italic">{selectedLesson.pointOfInterest}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
             )}
 
@@ -609,8 +659,8 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
                           <td className="p-2 font-medium">{obs.date}</td>
                           <td className="p-2 text-gray-700">{obs.phase.split(':')[0]}</td>
                           <td className="p-2 text-gray-600">{obs.groupCount}</td>
-                          <td className="p-2 text-gray-600 truncate max-w-[200px]">
-                            {obs.notes.slice(0, 60)}...
+                          <td className="p-2 text-gray-600 break-words">
+                            {obs.notes}
                           </td>
                         </tr>
                       ))}
@@ -627,18 +677,18 @@ export const PrintReportModal: React.FC<PrintReportModalProps> = ({
                     <thead className="bg-[#4A6B5D] text-white">
                       <tr>
                         <th className="p-2 text-left">{REPORT_TITLES.coreTitle}</th>
-                        <th className="p-2 text-left">{REPORT_TITLES.subjectLevel}</th>
-                        <th className="p-2 text-left">{REPORT_TITLES.aim}</th>
-                        <th className="p-2 text-left">{REPORT_TITLES.followA}</th>
+                        <th className="p-2 text-left">{REPORT_TITLES.subjectDomain}</th>
+                        <th className="p-2 text-left">{REPORT_TITLES.directAim}</th>
+                        <th className="p-2 text-left">{REPORT_TITLES.followUpHeading}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {localizedLessons.slice(0, 4).map((les) => (
                         <tr key={les.id} className="hover:bg-gray-50">
                           <td className="p-2 font-semibold text-gray-900">{les.title}</td>
-                          <td className="p-2 text-gray-700">{les.subject}</td>
-                          <td className="p-2 text-gray-600 truncate max-w-[200px]">{les.directAim}</td>
-                          <td className="p-2 text-gray-600 truncate max-w-[200px]">{les.follow1}</td>
+                          <td className="p-2 text-gray-700">{les.subject} ({les.ageGroup || les.level})</td>
+                          <td className="p-2 text-gray-600 break-words">{les.directAim}</td>
+                          <td className="p-2 text-gray-600 break-words">{les.followUpWork || les.follow1}</td>
                         </tr>
                       ))}
                     </tbody>

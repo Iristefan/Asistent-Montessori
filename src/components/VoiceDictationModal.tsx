@@ -22,6 +22,7 @@ import { Language } from '../i18n/translations';
 import { InstitutionConfig } from '../types';
 import { useSpeechToText } from '../hooks/useSpeechToText';
 import { exportVoiceNoteToPdf } from '../utils/voicePdfExport';
+import { AutoResizeTextarea } from './AutoResizeTextarea';
 
 interface VoiceDictationModalProps {
   isOpen: boolean;
@@ -621,8 +622,8 @@ export const VoiceDictationModal: React.FC<VoiceDictationModalProps> = ({
 
           {/* Live Textarea */}
           <div className="relative">
-            <textarea
-              rows={9}
+            <AutoResizeTextarea
+              minRows={9}
               value={transcriptText}
               onChange={(e) => setTranscriptText(e.target.value)}
               placeholder={t.textPlaceholder}

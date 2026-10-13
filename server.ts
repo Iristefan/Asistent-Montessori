@@ -17,7 +17,7 @@ app.use(express.json({ limit: '10mb' }));
 
 // Server-side Gemini initialization
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.GEMINI_API_KEY || 'AI_STUDIO_FALLBACK',
   httpOptions: {
     headers: {
       'User-Agent': 'aistudio-build',
@@ -25,17 +25,40 @@ const ai = new GoogleGenAI({
   },
 });
 
+// Fallback proxy to live AI Studio deployment when GEMINI_API_KEY is not configured locally
+app.use('/api', async (req, res, next) => {
+  if (process.env.GEMINI_API_KEY || req.method !== 'POST') {
+    return next();
+  }
+  // Let /lesson-plan be handled by our local route handler to ensure all 11 fields are populated
+  if (req.path === '/lesson-plan') {
+    return next();
+  }
+  try {
+    const upstream = await fetch(`https://assistant-montessori.ai.studio/api${req.path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req.body),
+    });
+    const data = await upstream.text();
+    res.status(upstream.status).type('application/json').send(data);
+  } catch (err: any) {
+    res.status(502).json({ error: err?.message || 'Eroare la conectarea cu serverul AI.' });
+  }
+});
+
 const getMontessoriSystemPrompt = (lang: string = 'fr') => {
   const langInstructions: Record<string, string> = {
-    fr: "Tu réponds toujours de manière bienveillante, structurée, claire et rigoureuse en FRANÇAIS, selon la terminologie officielle AMI.",
-    en: "You always respond in a gentle, structured, clear, and rigorous manner in ENGLISH, adhering to official AMI and MACTE standards.",
-    de: "Du antwortest stets wohlwollend, strukturiert, klar und fachlich präzise auf DEUTSCH, gemäß den offiziellen AMI-Standards.",
+    fr: "Tu réponds toujours de manière bienveillante, structurée, claire et rigoureuse en FRANÇAIS, selon la terminologie officielle Montessori.",
+    en: "You always respond in a gentle, structured, clear, and rigorous manner in ENGLISH, adhering to official Montessori standards.",
+    de: "Du antwortest stets wohlwollend, strukturiert, klar und fachlich präzise auf DEUTSCH, gemäß den offiziellen Montessori-Standards.",
     ro: "Răspunde întotdeauna cu blândețe, respect pentru independența copilului, structurat, clar și cald în limba ROMÂNĂ."
   };
 
   const instruction = langInstructions[lang] || langInstructions.fr;
 
-  return `Ești un expert formator și asistent/ghid Montessori certificat (AMI / MACTE / MMTTC), cu o profundă cunoaștere a filosofiei Dr. Maria Montessori și a standardelor de clasă (copii 0-3 ani, 3-6 ani Casa dei Bambini, și 6-12 ani Primar / Elementary).
+  return `Ești un expert formator și asistent/ghid Montessori certificat (Montessori), cu o profundă cunoaștere a filosofiei Dr. Maria Montessori și a standardelor de clasă (copii 0-3 ani, 3-6 ani Casa dei Bambini, și 6-12 ani Primar / Elementary).
+Nu folosi niciodată acronime precum „MMTTC”, „AMI” sau „MMTTC / AMI”; folosește întotdeauna denumirea „Montessori” sau „standardele Montessori”.
 Respectă întotdeauna principiile esențiale:
 - Mediul pregătit (prepared environment / ambiance préparée) ca al treilea educator
 - Mintea absorbantă și perioadele senzitive
@@ -91,13 +114,13 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// 2. Lesson plan generator (5 Elements)
+// 2. Presentation Plan generator (Planificator Prezentări)
 app.post('/api/lesson-plan', async (req, res) => {
   try {
-    const { topic, level, subject, lang = 'fr' } = req.body;
+    const { topic, level, subject, duration, lang = 'fr' } = req.body;
 
     if (!topic) {
-      return res.status(400).json({ error: 'Titlul sau tema lecției este obligatorie.' });
+      return res.status(400).json({ error: 'Titlul sau tema prezentării este obligatorie.' });
     }
 
     const langDirective = lang === 'fr' 
@@ -108,54 +131,147 @@ app.post('/api/lesson-plan', async (req, res) => {
       ? 'Verfasse alle JSON-Feldwerte auf DEUTSCH.'
       : 'Redactează toate valorile din JSON în limba ROMÂNĂ.';
 
-    const promptText = `Generează o fișă de lecție Montessori structurată riguros pe modelul celor 5 elemente de planificare.
-Nivel educațional: ${level || 'Casa dei Bambini (3-6 ani) sau Primar (6-12 ani)'}
-Domeniu: ${subject || 'Curriculum Montessori'}
-Tema/Titlu: ${topic}
+    const promptText = `Generează un plan complet și riguros de prezentare Montessori (Planificator de prezentări).
+Titlu / Temă: ${topic}
+Domeniu de activitate: ${subject || 'Curriculum Montessori'}
+Grupa de vârstă: ${level || 'Casa dei Bambini (3–6 ani) sau Primar (6–12 ani)'}
+${duration ? `Timp alocat dorit: ${duration}` : ''}
 ${langDirective}
 
-Trebuie să returnezi un obiect JSON cu următoarele proprietăți:
-- album_ref: referința de album Montessori specifică
-- scop_direct: scopul direct și clar al prezentării (Direct Aim)
-- scop_indirect: scopuri indirecte (Indirect Aims)
-- hots_1: întrebare de gândire de nivel superior pentru analiză/comparare
-- hots_2: întrebare de gândire de nivel superior pentru evaluare/creație/transfer
-- follow_1: activitate de urmare 1 - muncă de replicare/practică directă cu materialul
-- follow_2: activitate de urmare 2 - aplicație creativă, cercetare sau extindere practică
-- materiale_necesare: lista materialelor Montessori necesare pentru prezentare
-- punct_de_interes: punctul de interes senzorial sau mecanic pentru copil`;
+Trebuie să returnezi un obiect JSON cu următoarele proprietăți exacte:
+- titlu: titlul clar și formal al prezentării
+- domeniu: domeniul de activitate (ex: Viață Practică, Senzorial, Limbaj, Matematică, Științe & Cultură etc.)
+- grupa_varsta: grupa de vârstă potrivită (ex: 3-6 ani Casa dei Bambini, 6-9 ani Primar I etc.)
+- timp_alocat: durata recomandată (ex: "15 - 20 minute")
+- materiale_necesare: materialele exacte și specifice necesare pentru această prezentare
+- punct_de_interes: punctul de interes senzorial, mecanic sau logic care captivează atenția copilului
+- obiectiv_direct: obiectivul direct al prezentării (Direct Aim)
+- obiectiv_indirect: obiectivele indirecte de dezvoltare pe termen lung (Indirect Aim)
+- desfasurare_puncte: desfășurarea pas cu pas a lecției formatată obligatoriu cu bullet points (• Invitație și pregătirea spațiului; • Manipularea demonstrativă lentă și precisă; • Izolarea dificultății; • Controlul erorii; • Încheiere și așezare la loc pe raft)
+- follow_up: propuneri concrete de activități ulterioare (follow-up work) individuale pentru consolidare
+- follow_up_transdisciplinar: propuneri de follow-up work transdisciplinar (conexiuni interdisciplinare cu arta, natura, limbajul, matematica sau viața practică)`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents: promptText,
-      config: {
-        systemInstruction: `Ești un formator experimentat în metodologia de planificare Montessori și standardele AMI. Răspunzi strict în format JSON valid. ${langDirective}`,
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            album_ref: { type: Type.STRING },
-            scop_direct: { type: Type.STRING },
-            scop_indirect: { type: Type.STRING },
-            hots_1: { type: Type.STRING },
-            hots_2: { type: Type.STRING },
-            follow_1: { type: Type.STRING },
-            follow_2: { type: Type.STRING },
-            materiale_necesare: { type: Type.STRING },
-            punct_de_interes: { type: Type.STRING },
+    let rawPlan: any = null;
+
+    if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'AI_STUDIO_FALLBACK') {
+      try {
+        const response = await ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: promptText,
+          config: {
+            systemInstruction: `Ești un formator și pedagog expert în metodologia autentică Montessori (nu folosi acronime precum AMI sau MMTTC). Generezi planuri de prezentare de înaltă ținută pedagogică. Răspunzi strict în format JSON valid conform schemei. ${langDirective}`,
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                titlu: { type: Type.STRING },
+                domeniu: { type: Type.STRING },
+                grupa_varsta: { type: Type.STRING },
+                timp_alocat: { type: Type.STRING },
+                materiale_necesare: { type: Type.STRING },
+                punct_de_interes: { type: Type.STRING },
+                obiectiv_direct: { type: Type.STRING },
+                obiectiv_indirect: { type: Type.STRING },
+                desfasurare_puncte: { type: Type.STRING },
+                follow_up: { type: Type.STRING },
+                follow_up_transdisciplinar: { type: Type.STRING },
+              },
+              required: [
+                'titlu',
+                'domeniu',
+                'grupa_varsta',
+                'timp_alocat',
+                'materiale_necesare',
+                'punct_de_interes',
+                'obiectiv_direct',
+                'obiectiv_indirect',
+                'desfasurare_puncte',
+                'follow_up',
+                'follow_up_transdisciplinar',
+              ],
+            },
           },
-          required: ['album_ref', 'scop_direct', 'hots_1', 'hots_2', 'follow_1', 'follow_2'],
-        },
+        });
+        const jsonText = response.text?.trim() || '{}';
+        rawPlan = JSON.parse(jsonText);
+      } catch (geminiErr) {
+        console.warn('Local Gemini call failed, falling back to upstream /api/chat:', geminiErr);
+      }
+    }
+
+    if (!rawPlan) {
+      // Fallback: Call upstream Gemini 3.8 Flash chat endpoint
+      const upstreamChat = await fetch('https://assistant-montessori.ai.studio/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `IMPORTANT: Răspunde STRICT cu un bloc JSON valid conform cerinței, fără alt text.\n\n${promptText}`,
+          lang,
+        }),
+      });
+
+      if (!upstreamChat.ok) {
+        throw new Error(`Eroare de comunicare AI: ${upstreamChat.statusText}`);
+      }
+
+      const chatData = await upstreamChat.json();
+      const reply = chatData?.reply || '';
+      const jsonMatch = reply.match(/```(?:json)?\s*([\s\S]*?)\s*```/) || [null, reply];
+      const jsonClean = (jsonMatch[1] || reply).trim();
+      rawPlan = JSON.parse(jsonClean);
+    }
+
+    const toStringBullets = (val: any): string => {
+      if (!val) return '';
+      if (Array.isArray(val)) {
+        return val
+          .map((v: any) => {
+            const str = String(v).trim();
+            return str.startsWith('•') ? str : `• ${str}`;
+          })
+          .join('\n');
+      }
+      return String(val).trim();
+    };
+
+    const plan = {
+      title: String(rawPlan.titlu || rawPlan.title || topic).trim(),
+      subject: String(rawPlan.domeniu || rawPlan.domeniu_activitate || rawPlan.subject || subject || 'Curriculum Montessori').trim(),
+      ageGroup: String(rawPlan.grupa_varsta || rawPlan.ageGroup || level || 'Casa dei Bambini (3–6 ani)').trim(),
+      duration: String(rawPlan.timp_alocat || rawPlan.duration || '20 minute').trim(),
+      materials: toStringBullets(rawPlan.materiale_necesare || rawPlan.materials),
+      pointOfInterest: toStringBullets(rawPlan.punct_de_interes || rawPlan.pointOfInterest),
+      directAim: toStringBullets(rawPlan.obiectiv_direct || rawPlan.directAim || rawPlan.scop_direct),
+      indirectAim: toStringBullets(rawPlan.obiectiv_indirect || rawPlan.indirectAim || rawPlan.scop_indirect),
+      procedure: toStringBullets(rawPlan.desfasurare_puncte || rawPlan.desfasurare_lectie || rawPlan.procedure),
+      followUpWork: toStringBullets(rawPlan.follow_up || rawPlan.followUpWork || rawPlan.follow_1),
+      crossCurricular: toStringBullets(rawPlan.follow_up_transdisciplinar || rawPlan.crossCurricular || rawPlan.follow_2),
+    };
+
+    res.json({
+      success: true,
+      plan: {
+        ...rawPlan,
+        ...plan,
+        titlu: plan.title,
+        domeniu: plan.subject,
+        domeniu_activitate: plan.subject,
+        grupa_varsta: plan.ageGroup,
+        timp_alocat: plan.duration,
+        materiale_necesare: plan.materials,
+        punct_de_interes: plan.pointOfInterest,
+        obiectiv_direct: plan.directAim,
+        obiectiv_indirect: plan.indirectAim,
+        desfasurare_puncte: plan.procedure,
+        desfasurare_lectie: plan.procedure,
+        follow_up: plan.followUpWork,
+        follow_up_transdisciplinar: plan.crossCurricular,
       },
     });
-
-    const jsonText = response.text?.trim() || '{}';
-    const plan = JSON.parse(jsonText);
-    res.json({ success: true, plan });
   } catch (error: any) {
-    console.error('Eroare Gemini Lesson Plan:', error);
+    console.error('Eroare Gemini Presentation Plan:', error);
     res.status(500).json({
-      error: error?.message || 'A apărut o eroare la generarea planului de lecție.',
+      error: error?.message || 'A apărut o eroare la generarea planului de prezentare.',
     });
   }
 });
@@ -177,7 +293,7 @@ app.post('/api/analyze-observation', async (req, res) => {
       ? 'Verfasse die Analyse auf DEUTSCH.'
       : 'Răspunde în limba ROMÂNĂ.';
 
-    const promptText = `Analizează următoarele note de observație din perspectiva standardelor MMTTC / AMI pentru cele 20 de ore de practică:
+    const promptText = `Analizează următoarele note de observație din perspectiva standardelor Montessori pentru cele 20 de ore de practică:
 Etapa observației: ${phase || 'General'}
 Grup: ${groupInfo || 'Nespecificat'}
 Note obiective înregistrate de asistent:
@@ -221,7 +337,7 @@ app.post('/api/analyze-child-observation', async (req, res) => {
     const langTarget = lang === 'fr'
       ? 'Rédige toutes les valeurs textuelles en FRANÇAIS selon la terminologie officielle Montessori.'
       : lang === 'en'
-      ? 'Write all text values in ENGLISH adhering to official AMI and MACTE standards.'
+      ? 'Write all text values in ENGLISH adhering to official Montessori standards.'
       : lang === 'de'
       ? 'Verfasse alle Textwerte auf DEUTSCH gemäß den Montessori-Standards.'
       : 'Redactează toate valorile textuale în limba ROMÂNĂ.';
@@ -346,7 +462,7 @@ app.post('/api/analyze-sensitive-periods', async (req, res) => {
       ? 'Verfasse die Antwort auf DEUTSCH mit klarer Markdown-Formatierung.'
       : 'Răspunde în limba ROMÂNĂ cu formatare Markdown clară și profesională.';
 
-    const promptText = `Ești un formator Montessori expert (diplomat AMI) și consultant pedagogic.
+    const promptText = `Ești un formator Montessori expert (diplomat Montessori) și consultant pedagogic. Nu menționa acronime precum AMI sau MMTTC, ci doar Montessori.
 Pe baza următoarei observații comportamentale a unui copil (Vârstă: ${childAge || '3-6 ani'}):
 "${observationText}"
 

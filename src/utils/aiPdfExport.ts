@@ -149,12 +149,12 @@ export function exportAiResponseToPdf(data: AiResponseExportData): void {
   // Badge on the right
   const badgeLabel =
     data.lang === 'fr'
-      ? 'CONSEIL PÉDAGOGIQUE IA - GOOGLE GEMINI 3.8 FLASH'
+      ? 'CONSEIL PÉDAGOGIQUE IA MONTESSORI'
       : data.lang === 'en'
-      ? 'AI PEDAGOGICAL GUIDANCE - GOOGLE GEMINI 3.8 FLASH'
+      ? 'MONTESSORI AI PEDAGOGICAL GUIDANCE'
       : data.lang === 'de'
-      ? 'KI-PÄDAGOGISCHE BERATUNG - GOOGLE GEMINI 3.8 FLASH'
-      : 'CONSULTANȚĂ PEDAGOGICĂ AI - GOOGLE GEMINI 3.8 FLASH';
+      ? 'MONTESSORI KI-PÄDAGOGISCHE BERATUNG'
+      : 'CONSULTANȚĂ PEDAGOGICĂ AI MONTESSORI';
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(7.5);

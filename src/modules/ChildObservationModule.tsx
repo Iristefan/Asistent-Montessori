@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChildObservationRecord, InstitutionConfig, AssessmentStatus } from '../types';
 import { Language, UI_TRANSLATIONS } from '../i18n/translations';
 import { SpeechToTextButton } from '../components/SpeechToTextButton';
+import { AutoResizeTextarea } from '../components/AutoResizeTextarea';
 import { exportChildObservationToPdf } from '../utils/individualChildPdfExport';
 import {
   UserCheck,
@@ -182,12 +183,43 @@ const DEFAULT_SAMPLE_RECORD: Record<Language, ChildObservationRecord> = {
   },
 };
 
+const getEmptyChildRecord = (lang: Language): ChildObservationRecord => {
+  const childLevel =
+    lang === 'ro'
+      ? 'Casa dei Bambini (3–6 ani)'
+      : lang === 'fr'
+      ? 'Maison des Enfants (3–6 ans)'
+      : lang === 'de'
+      ? 'Kinderhaus (3–6 J.)'
+      : "Children’s House (3–6 yrs)";
+  return {
+    id: 'child-' + Date.now(),
+    childName: '',
+    childAge: '',
+    childLevel,
+    date: new Date().toISOString().split('T')[0],
+    observerName: '',
+    domains: {
+      practicalLife: { status: 'introduced' as any, notes: '' },
+      sensorial: { status: 'introduced' as any, notes: '' },
+      language: { status: 'introduced' as any, notes: '' },
+      mathStem: { status: 'introduced' as any, notes: '' },
+      cultural: { status: 'introduced' as any, notes: '' },
+      socialEmotional: { status: 'introduced' as any, notes: '' },
+    },
+    generalObs: '',
+    nextSteps: '',
+    createdAt: Date.now(),
+  };
+};
+
 export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
   institution,
   lang,
 }) => {
   const t = UI_TRANSLATIONS[lang];
   const cT = t.childObs;
+  const sampleRecord = DEFAULT_SAMPLE_RECORD[lang] || DEFAULT_SAMPLE_RECORD.ro;
 
   const storageKey = 'montessori_child_observations_v1';
 
@@ -202,11 +234,11 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
     } catch (e) {
       console.error(e);
     }
-    return [DEFAULT_SAMPLE_RECORD[lang] || DEFAULT_SAMPLE_RECORD.fr];
+    return [DEFAULT_SAMPLE_RECORD[lang] || DEFAULT_SAMPLE_RECORD.ro];
   });
 
   const [currentRecord, setCurrentRecord] = useState<ChildObservationRecord>(() => {
-    return DEFAULT_SAMPLE_RECORD[lang] || DEFAULT_SAMPLE_RECORD.fr;
+    return getEmptyChildRecord(lang);
   });
 
   // AI Assistant states
@@ -216,11 +248,15 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
   const [activeTab, setActiveTab] = useState<'form' | 'records'>('form');
   const [saveToast, setSaveToast] = useState(false);
 
-  // Sync sample with language changes if untouched
+  // Sync sample with language changes if untouched sample
   useEffect(() => {
-    const sample = DEFAULT_SAMPLE_RECORD[lang] || DEFAULT_SAMPLE_RECORD.fr;
-    if (currentRecord.id === 'sample-child-1') {
-      setCurrentRecord(sample);
+    const sample = DEFAULT_SAMPLE_RECORD[lang] || DEFAULT_SAMPLE_RECORD.ro;
+    if (currentRecord.id === 'sample-child-1' || currentRecord.id.startsWith('sample-')) {
+      setCurrentRecord({
+        ...sample,
+        id: currentRecord.id,
+        date: currentRecord.date || new Date().toISOString().split('T')[0],
+      });
     }
   }, [lang]);
 
@@ -251,7 +287,7 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
   };
 
   const handleResetExample = () => {
-    const sample = DEFAULT_SAMPLE_RECORD[lang] || DEFAULT_SAMPLE_RECORD.fr;
+    const sample = DEFAULT_SAMPLE_RECORD[lang] || DEFAULT_SAMPLE_RECORD.ro;
     setCurrentRecord({
       ...sample,
       id: 'sample-' + Date.now(),
@@ -511,25 +547,22 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
               <span className="text-xs font-bold uppercase tracking-wider text-[#D4A373] flex items-center gap-1.5">
                 <Sparkles className="w-4 h-4" /> {cT.aiTitle}
               </span>
-              <span className="text-[11px] text-white/70 hidden sm:inline">
-                Gemini 3.8 Flash
-              </span>
             </div>
             <p className="text-xs text-white/80 leading-relaxed">{cT.aiDesc}</p>
 
             <div className="relative">
-              <textarea
+              <AutoResizeTextarea
                 value={rawAiNotes}
                 onChange={(e) => setRawAiNotes(e.target.value)}
                 placeholder={cT.aiPlaceholder}
-                rows={3}
+                minRows={3}
                 className="w-full bg-white/10 border border-white/30 rounded-xl p-3 pr-10 text-xs text-white placeholder-white/50 focus:outline-none focus:border-[#D4A373] focus:bg-white/15"
               />
-              <div className="absolute right-2 bottom-3">
+              <div className="absolute right-2 top-3">
                 <SpeechToTextButton
                   lang={lang}
                   currentValue={rawAiNotes}
-                  onTranscript={(txt) => setRawAiNotes((prev) => (prev ? prev + ' ' + txt : txt))}
+                  onTranscript={(txt) => setRawAiNotes(txt)}
                   size="sm"
                 />
               </div>
@@ -582,6 +615,7 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
                   onChange={(e) =>
                     setCurrentRecord((p) => ({ ...p, childName: e.target.value }))
                   }
+                  placeholder={sampleRecord.childName || 'Ex: Liam T.'}
                   className="w-full h-[38px] box-border bg-gray-50 border border-gray-300 rounded-lg px-3 text-xs focus:ring-1 focus:ring-[#2E5A44] focus:outline-none"
                 />
               </div>
@@ -598,6 +632,7 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
                   onChange={(e) =>
                     setCurrentRecord((p) => ({ ...p, childAge: e.target.value }))
                   }
+                  placeholder={sampleRecord.childAge || 'Ex: 4 ani 2 luni'}
                   className="w-full h-[38px] box-border bg-gray-50 border border-gray-300 rounded-lg px-3 text-xs focus:ring-1 focus:ring-[#2E5A44] focus:outline-none"
                 />
               </div>
@@ -614,6 +649,7 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
                   onChange={(e) =>
                     setCurrentRecord((p) => ({ ...p, childLevel: e.target.value }))
                   }
+                  placeholder={sampleRecord.childLevel || 'Casa dei Bambini (3–6 ani)'}
                   className="w-full h-[38px] box-border bg-gray-50 border border-gray-300 rounded-lg px-3 text-xs focus:ring-1 focus:ring-[#2E5A44] focus:outline-none"
                 />
               </div>
@@ -646,6 +682,7 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
                   onChange={(e) =>
                     setCurrentRecord((p) => ({ ...p, observerName: e.target.value }))
                   }
+                  placeholder={sampleRecord.observerName || 'Ghid / Asistent Montessori'}
                   className="w-full h-[38px] box-border bg-gray-50 border border-gray-300 rounded-lg px-3 text-xs focus:ring-1 focus:ring-[#2E5A44] focus:outline-none"
                 />
               </div>
@@ -658,7 +695,7 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
               🌿 {cT.domainsTitle}
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
               {domainConfig.map((dom) => {
                 const Icon = dom.icon;
                 const dData = currentRecord.domains[dom.key];
@@ -666,7 +703,7 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
                 return (
                   <div
                     key={dom.key}
-                    className="p-4 rounded-xl border border-gray-200 bg-[#FAFBF9] space-y-2.5 hover:border-[#2E5A44]/30 transition-all"
+                    className="flex flex-col h-full justify-between p-4 rounded-xl border border-gray-200 bg-[#FAFBF9] space-y-2.5 hover:border-[#2E5A44]/30 transition-all"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -694,26 +731,22 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
                       </select>
                     </div>
 
-                    <div className="relative">
-                      <textarea
+                    <div className="relative flex-1 flex flex-col">
+                      <AutoResizeTextarea
                         value={dData.notes}
                         onChange={(e) =>
                           handleDomainChange(dom.key, 'notes', e.target.value)
                         }
-                        placeholder={cT.notesPlaceholder}
-                        rows={2}
-                        className="w-full bg-white border border-gray-200 rounded-lg p-2.5 pr-8 text-xs text-gray-800 focus:outline-none focus:border-[#2E5A44] focus:ring-1 focus:ring-[#2E5A44]"
+                        placeholder={sampleRecord.domains[dom.key]?.notes || cT.notesPlaceholder}
+                        minRows={2}
+                        className="flex-1 w-full bg-white border border-gray-200 rounded-lg p-2.5 pr-8 text-xs text-gray-800 focus:outline-none focus:border-[#2E5A44] focus:ring-1 focus:ring-[#2E5A44]"
                       />
-                      <div className="absolute right-1.5 top-1/2 -translate-y-1/2">
+                      <div className="absolute right-1.5 top-2.5">
                         <SpeechToTextButton
                           lang={lang}
                           currentValue={dData.notes}
                           onTranscript={(txt) =>
-                            handleDomainChange(
-                              dom.key,
-                              'notes',
-                              dData.notes ? dData.notes + ' ' + txt : txt
-                            )
+                            handleDomainChange(dom.key, 'notes', txt)
                           }
                           size="sm"
                         />
@@ -731,13 +764,13 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
               {cT.generalTitle}
             </h3>
             <div className="relative">
-              <textarea
+              <AutoResizeTextarea
                 value={currentRecord.generalObs}
                 onChange={(e) =>
                   setCurrentRecord((p) => ({ ...p, generalObs: e.target.value }))
                 }
-                placeholder={cT.generalPlaceholder}
-                rows={3}
+                placeholder={sampleRecord.generalObs || cT.generalPlaceholder}
+                minRows={3}
                 className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 pr-10 text-xs text-gray-800 focus:outline-none focus:border-[#2E5A44] focus:bg-white"
               />
               <div className="absolute right-2 top-3">
@@ -747,7 +780,7 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
                   onTranscript={(txt) =>
                     setCurrentRecord((p) => ({
                       ...p,
-                      generalObs: p.generalObs ? p.generalObs + ' ' + txt : txt,
+                      generalObs: txt,
                     }))
                   }
                   size="sm"
@@ -762,13 +795,13 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
               {cT.nextStepsTitle}
             </h3>
             <div className="relative">
-              <textarea
+              <AutoResizeTextarea
                 value={currentRecord.nextSteps}
                 onChange={(e) =>
                   setCurrentRecord((p) => ({ ...p, nextSteps: e.target.value }))
                 }
-                placeholder={cT.nextStepsPlaceholder}
-                rows={3}
+                placeholder={sampleRecord.nextSteps || cT.nextStepsPlaceholder}
+                minRows={3}
                 className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 pr-10 text-xs text-gray-800 focus:outline-none focus:border-[#2E5A44] focus:bg-white"
               />
               <div className="absolute right-2 top-3">
@@ -778,7 +811,7 @@ export const ChildObservationModule: React.FC<ChildObservationModuleProps> = ({
                   onTranscript={(txt) =>
                     setCurrentRecord((p) => ({
                       ...p,
-                      nextSteps: p.nextSteps ? p.nextSteps + ' ' + txt : txt,
+                      nextSteps: txt,
                     }))
                   }
                   size="sm"

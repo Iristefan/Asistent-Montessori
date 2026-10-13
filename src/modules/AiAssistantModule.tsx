@@ -324,27 +324,6 @@ export const AiAssistantModule: React.FC<AiAssistantModuleProps> = ({ institutio
             )}
           </div>
         </div>
-
-        {/* Quick prompt chips */}
-        <div className="pt-2">
-          <span className="text-[11px] font-bold text-[#2E5A44] uppercase tracking-wider block mb-2">
-            {t.frequentQuestions}
-          </span>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-            {questions.map((q) => (
-              <button
-                key={q.title}
-                type="button"
-                onClick={() => handleSend(q.prompt)}
-                disabled={isLoading}
-                className="p-2.5 bg-[#F4F7F5] hover:bg-[#2E5A44]/10 border border-[#2E5A44]/15 rounded-xl text-left transition-colors text-xs text-[#1F3A2B] font-medium flex items-start gap-2 disabled:opacity-50 cursor-pointer"
-              >
-                <HelpCircle className="w-4 h-4 text-[#D4A373] shrink-0 mt-0.5" />
-                <span className="line-clamp-2">{q.title}</span>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Chat Messages Container */}
@@ -361,13 +340,13 @@ export const AiAssistantModule: React.FC<AiAssistantModuleProps> = ({ institutio
                 }`}
               >
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                  className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold ${
                     isUser
                       ? 'bg-[#1F3A2B] text-white'
                       : 'bg-[#2E5A44] text-[#D4A373] border border-[#D4A373]'
                   }`}
                 >
-                  {isUser ? 'Tu' : <Sparkles className="w-4 h-4" />}
+                  {isUser ? (lang === 'en' ? 'You' : lang === 'de' ? 'Du' : 'Tu') : <Sparkles className="w-4 h-4" />}
                 </div>
 
                 <div
@@ -445,13 +424,13 @@ export const AiAssistantModule: React.FC<AiAssistantModuleProps> = ({ institutio
         </div>
 
         {/* Input Bar */}
-        <div className="p-4 bg-white border-t border-gray-200">
+        <div className="p-4 bg-[#F4F7F5]/60 border-t-2 border-[#2E5A44]/20">
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSend();
             }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2.5"
           >
             <div className="flex-1 relative flex items-center">
               <input
@@ -460,21 +439,21 @@ export const AiAssistantModule: React.FC<AiAssistantModuleProps> = ({ institutio
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={t.inputPlaceholder}
                 disabled={isLoading}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 pr-10 text-xs md:text-sm text-gray-800 placeholder-gray-400 focus:bg-white focus:outline-none focus:border-[#2E5A44]"
+                className="w-full bg-white border-2 border-[#2E5A44] rounded-xl px-4 py-3 pr-12 text-xs md:text-sm font-medium text-gray-900 placeholder-gray-500 shadow-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#2E5A44]/25 focus:border-[#1F3A2B] transition-all"
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2">
                 <SpeechToTextButton
                   lang={lang}
                   currentValue={input}
                   onTranscript={(val) => setInput(val)}
-                  size="sm"
+                  size="md"
                 />
               </div>
             </div>
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className="px-5 py-2.5 bg-[#2E5A44] hover:bg-[#1F3A2B] disabled:opacity-40 text-white font-bold text-xs rounded-xl shadow flex items-center gap-1.5 transition-all cursor-pointer shrink-0"
+              className="px-5 py-3 bg-[#2E5A44] hover:bg-[#1F3A2B] disabled:opacity-40 text-white font-bold text-xs md:text-sm rounded-xl shadow-md flex items-center gap-1.5 transition-all cursor-pointer shrink-0 border-2 border-[#1F3A2B]"
             >
               <Send className="w-4 h-4 text-[#D4A373]" />
               <span className="hidden sm:inline">{t.sendBtn}</span>

@@ -26,12 +26,11 @@ import { HubModule } from './modules/HubModule';
 import { ObservationModule } from './modules/ObservationModule';
 import { LessonPlannerModule } from './modules/LessonPlannerModule';
 import { PeaceBehaviorModule } from './modules/PeaceBehaviorModule';
-import { DictionaryModule } from './modules/DictionaryModule';
 import { AiAssistantModule } from './modules/AiAssistantModule';
 import { ReportCenterModule } from './modules/ReportCenterModule';
 import { MontessoriCalendarModule } from './modules/MontessoriCalendarModule';
 import { ChildObservationModule } from './modules/ChildObservationModule';
-import { SensitivePeriodsModule } from './modules/SensitivePeriodsModule';
+import { ObservationModulesPage } from './modules/ObservationModulesPage';
 
 import {
   Home,
@@ -52,7 +51,7 @@ import {
   Sparkles,
   Mic,
   UserCheck,
-  Sprout
+  ClipboardList
 } from 'lucide-react';
 
 const INITIAL_OBSERVATION: ObservationSession = {
@@ -91,7 +90,7 @@ function MainAppContent() {
   });
 
   // Navigation
-  const [activeModule, setActiveModule] = useState<string>('hub');
+  const [activeModule, setActiveModule] = useState<string>('ai');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
@@ -170,7 +169,9 @@ function MainAppContent() {
   useEffect(() => {
     localStorage.setItem('montessori_lang_v3', currentLang);
     document.documentElement.lang = currentLang;
-  }, [currentLang]);
+    const activeAppName = UI_TRANSLATIONS[currentLang]?.appName || 'Assistant Montessori';
+    document.title = `${activeAppName} – ${institution.name}`;
+  }, [currentLang, institution.name]);
 
   useEffect(() => {
     localStorage.setItem('montessori_inst_config', JSON.stringify(institution));
@@ -258,14 +259,10 @@ function MainAppContent() {
 
   // Navigation Items with active language labels
   const navItems = [
-    { id: 'hub', label: t.nav.hub, icon: Home },
     { id: 'ai', label: t.nav.ai, icon: Bot, isAi: true },
-    { id: 'child_obs', label: t.nav.childObs, icon: UserCheck },
-    { id: 'sensitive', label: t.nav.sensitive, icon: Sprout },
-    { id: 'obs', label: t.nav.obs, icon: Eye },
+    { id: 'obs_modules', label: t.nav.obsModules, icon: ClipboardList },
     { id: 'lesson', label: t.nav.lesson, icon: FileText },
     { id: 'peace', label: t.nav.peace, icon: Heart },
-    { id: 'dict', label: t.nav.dict, icon: BookOpen },
     { id: 'calendar', label: t.nav.calendar, icon: CalendarIcon },
     { id: 'reports', label: t.nav.reports, icon: Printer },
   ];
@@ -278,10 +275,16 @@ function MainAppContent() {
           <Leaf className="w-7 h-7" />
         </div>
         <h2 className="text-xl font-serif font-bold text-[#1F3A2B] tracking-wide">
-          Assistant Montessori
+          {t.appName}
         </h2>
         <p className="text-xs text-stone-500 mt-2">
-          Chargement de votre session sécurisée...
+          {currentLang === 'ro'
+            ? 'Se încarcă sesiunea securizată...'
+            : currentLang === 'en'
+            ? 'Loading your secure session...'
+            : currentLang === 'de'
+            ? 'Ihre sichere Sitzung wird geladen...'
+            : 'Chargement de votre session sécurisée...'}
         </p>
       </div>
     );
@@ -297,7 +300,19 @@ function MainAppContent() {
     );
   }
 
-  const roleBadge = isAdmin ? '👑 Admin' : userProfile?.role === 'educator' ? '🌱 Éducateur' : '🎓 Client';
+  const roleBadge = isAdmin
+    ? '👑 Admin'
+    : userProfile?.role === 'educator'
+    ? currentLang === 'ro'
+      ? '🌱 Educator'
+      : currentLang === 'en'
+      ? '🌱 Educator'
+      : currentLang === 'de'
+      ? '🌱 Pädagoge'
+      : '🌱 Éducateur'
+    : currentLang === 'de'
+    ? '🎓 Kunde'
+    : '🎓 Client';
 
   return (
     <div className="min-h-screen bg-[#F4F7F5] text-gray-900 font-sans flex flex-col selection:bg-[#D4A373]/30 selection:text-[#1F3A2B]">
@@ -318,17 +333,6 @@ function MainAppContent() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Mobile Voice Dictation Button */}
-          <button
-            type="button"
-            onClick={() => setIsVoiceModalOpen(true)}
-            className="px-2 py-1 bg-red-600/90 hover:bg-red-600 text-white rounded-lg flex items-center gap-1 text-[11px] font-bold border border-red-400/40 cursor-pointer shadow-xs"
-            title="Dictare vocală / Speech-to-Text"
-          >
-            <Mic className="w-3.5 h-3.5" />
-            <span className="font-mono text-[9px] uppercase bg-white/20 px-1 rounded-xs">MIC</span>
-          </button>
-
           {/* Mobile Manual Button */}
           <button
             type="button"
@@ -360,7 +364,7 @@ function MainAppContent() {
       </header>
 
       {/* Main Body Layout */}
-      <div className="flex-1 flex w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 md:py-6 gap-6">
+      <div className={`flex-1 flex w-full max-w-7xl mx-auto px-3 sm:px-6 py-4 md:py-6 gap-6 ${isPrintModalOpen || isManualModalOpen ? 'print:hidden' : ''}`}>
         {/* Desktop Sidebar Navigation */}
         <aside className="no-print hidden lg:flex flex-col w-64 shrink-0 space-y-4">
           {/* Logo & Title Card */}
@@ -386,9 +390,6 @@ function MainAppContent() {
                 align="left"
               />
             </div>
-            <p className="text-[11px] text-white/80 italic leading-snug pt-1">
-              {t.tagline}
-            </p>
           </div>
 
           {/* User Account Card */}
@@ -417,10 +418,26 @@ function MainAppContent() {
                 type="button"
                 onClick={logout}
                 className="text-[11px] text-stone-500 hover:text-red-700 flex items-center gap-1 font-medium transition-colors cursor-pointer"
-                title="Se déconnecter"
+                title={
+                  currentLang === 'ro'
+                    ? 'Deconectare'
+                    : currentLang === 'en'
+                    ? 'Sign out'
+                    : currentLang === 'de'
+                    ? 'Abmelden'
+                    : 'Se déconnecter'
+                }
               >
                 <LogOut className="w-3.5 h-3.5" />
-                <span>Déconnexion</span>
+                <span>
+                  {currentLang === 'ro'
+                    ? 'Deconectare'
+                    : currentLang === 'en'
+                    ? 'Sign out'
+                    : currentLang === 'de'
+                    ? 'Abmelden'
+                    : 'Déconnexion'}
+                </span>
               </button>
             </div>
 
@@ -431,7 +448,15 @@ function MainAppContent() {
                 className="w-full mt-1 py-1.5 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Users className="w-3.5 h-3.5 text-amber-700" />
-                <span>Gérer les comptes clients</span>
+                <span>
+                  {currentLang === 'ro'
+                    ? 'Gestionare conturi utilizatori'
+                    : currentLang === 'en'
+                    ? 'Manage client accounts'
+                    : currentLang === 'de'
+                    ? 'Kundenkonten verwalten'
+                    : 'Gérer les comptes clients'}
+                </span>
               </button>
             )}
           </div>
@@ -473,31 +498,8 @@ function MainAppContent() {
             })}
           </nav>
 
-          {/* Desktop Voice Dictation Studio & User Manual Buttons */}
-          <div className="pt-2 border-t border-gray-200 space-y-2">
-            <button
-              type="button"
-              onClick={() => setIsVoiceModalOpen(true)}
-              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold bg-[#FAF7F2] hover:bg-[#F2ECE1] text-[#1F3A2B] border border-[#2E5A44]/30 shadow-2xs hover:shadow-xs transition-all cursor-pointer group"
-            >
-              <div className="flex items-center gap-2">
-                <Mic className="w-4 h-4 text-red-600 group-hover:scale-110 transition-transform animate-pulse" />
-                <span>
-                  {currentLang === 'fr'
-                    ? 'Dictée Vocale (PDF)'
-                    : currentLang === 'de'
-                    ? 'Spracheingabe (PDF)'
-                    : currentLang === 'en'
-                    ? 'Voice Dictation (PDF)'
-                    : 'Dictare Vocală (PDF)'}
-                </span>
-              </div>
-              <span className="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded-xs bg-red-600 text-white font-bold">
-                REC
-              </span>
-            </button>
-
-            {/* Desktop User Manual Button */}
+          {/* Desktop User Manual Button */}
+          <div className="pt-2 border-t border-gray-200">
             <button
               type="button"
               onClick={() => setIsManualModalOpen(true)}
@@ -555,7 +557,15 @@ function MainAppContent() {
                       className="w-full py-1.5 px-2 bg-amber-100/70 text-amber-950 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5"
                     >
                       <Users className="w-3.5 h-3.5" />
-                      <span>Gérer les comptes clients</span>
+                      <span>
+                        {currentLang === 'ro'
+                          ? 'Gestionare conturi utilizatori'
+                          : currentLang === 'en'
+                          ? 'Manage client accounts'
+                          : currentLang === 'de'
+                          ? 'Kundenkonten verwalten'
+                          : 'Gérer les comptes clients'}
+                      </span>
                     </button>
                   )}
                   <button
@@ -564,7 +574,15 @@ function MainAppContent() {
                     className="w-full py-1.5 px-2 bg-stone-200/80 hover:bg-stone-300 text-stone-700 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5"
                   >
                     <LogOut className="w-3.5 h-3.5 text-stone-500" />
-                    <span>Déconnexion</span>
+                    <span>
+                      {currentLang === 'ro'
+                        ? 'Deconectare'
+                        : currentLang === 'en'
+                        ? 'Sign out'
+                        : currentLang === 'de'
+                        ? 'Abmelden'
+                        : 'Déconnexion'}
+                    </span>
                   </button>
                 </div>
 
@@ -607,33 +625,8 @@ function MainAppContent() {
                   })}
                 </nav>
 
-                {/* Mobile Drawer Voice Dictation & Manual Buttons */}
-                <div className="pt-3 border-t border-gray-100 space-y-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsVoiceModalOpen(true);
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold bg-[#FAF7F2] text-[#1F3A2B] border border-red-200 cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Mic className="w-4 h-4 text-red-600 animate-pulse" />
-                      <span>
-                        {currentLang === 'fr'
-                          ? 'Dictée Vocale (PDF)'
-                          : currentLang === 'de'
-                          ? 'Spracheingabe (PDF)'
-                          : currentLang === 'en'
-                          ? 'Voice Dictation (PDF)'
-                          : 'Dictare Vocală (PDF)'}
-                      </span>
-                    </div>
-                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-xs bg-red-600 text-white font-bold">
-                      REC
-                    </span>
-                  </button>
-
+                {/* Mobile Drawer Manual Button */}
+                <div className="pt-3 border-t border-gray-100">
                   <button
                     type="button"
                     onClick={() => {
@@ -673,32 +666,21 @@ function MainAppContent() {
 
           {/* Module Content */}
           <div className="no-print animate-fadeIn">
-            {activeModule === 'hub' && (
-              <HubModule
-                routines={routines}
-                onToggleRoutine={handleToggleRoutine}
-                onResetRoutines={handleResetRoutines}
-                quickNotes={quickNotes}
-                onAddNote={handleAddNote}
-                onDeleteNote={handleDeleteNote}
-                onToggleNote={handleToggleNote}
-                onNavigate={setActiveModule}
-                onOpenPrint={() => setIsPrintModalOpen(true)}
-                onOpenManual={() => setIsManualModalOpen(true)}
-                institution={institution}
+            {activeModule === 'obs_modules' && (
+              <ObservationModulesPage
                 lang={currentLang}
+                institution={institution}
+                observations={observations}
+                onAddObservation={handleAddObservation}
+                onDeleteObservation={handleDeleteObservation}
+                onUpdateObservation={handleUpdateObservation}
+                onOpenPrint={() => setIsPrintModalOpen(true)}
               />
             )}
 
             {activeModule === 'child_obs' && (
               <ChildObservationModule
                 institution={institution}
-                lang={currentLang}
-              />
-            )}
-
-            {activeModule === 'sensitive' && (
-              <SensitivePeriodsModule
                 lang={currentLang}
               />
             )}
@@ -735,8 +717,6 @@ function MainAppContent() {
             )}
 
             {activeModule === 'peace' && <PeaceBehaviorModule lang={currentLang} />}
-
-            {activeModule === 'dict' && <DictionaryModule lang={currentLang} />}
 
             {activeModule === 'ai' && (
               <AiAssistantModule institution={institution} lang={currentLang} />

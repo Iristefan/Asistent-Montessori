@@ -20,6 +20,7 @@ import {
   FileDown
 } from 'lucide-react';
 import { SpeechToTextButton } from '../components/SpeechToTextButton';
+import { AutoResizeTextarea } from '../components/AutoResizeTextarea';
 import { exportAiResponseToPdf } from '../utils/aiPdfExport';
 
 interface ObservationModuleProps {
@@ -67,10 +68,10 @@ export const ObservationModule: React.FC<ObservationModuleProps> = ({
 
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [startTime, setStartTime] = useState('09:00');
-  const [groupCount, setGroupCount] = useState(currentDefaults.groupCount);
-  const [weather, setWeather] = useState(currentDefaults.weather);
-  const [notes, setNotes] = useState(currentDefaults.notes);
-  const [reflection, setReflection] = useState(currentDefaults.reflection);
+  const [groupCount, setGroupCount] = useState('');
+  const [weather, setWeather] = useState('');
+  const [notes, setNotes] = useState('');
+  const [reflection, setReflection] = useState('');
 
   // Sync form defaults when language switches
   useEffect(() => {
@@ -80,7 +81,7 @@ export const ObservationModule: React.FC<ObservationModuleProps> = ({
     );
     const currentNotesNormalized = notes.replace(/\r\n/g, '\n').trim();
 
-    if (!currentNotesNormalized || allDefaultNotes.includes(currentNotesNormalized)) {
+    if (currentNotesNormalized && allDefaultNotes.includes(currentNotesNormalized)) {
       setNotes(defaults.notes);
       setReflection(defaults.reflection);
       setGroupCount(defaults.groupCount);
@@ -321,7 +322,7 @@ export const ObservationModule: React.FC<ObservationModuleProps> = ({
                   type="text"
                   value={groupCount}
                   onChange={(e) => setGroupCount(e.target.value)}
-                  placeholder={t.groupPlaceholder}
+                  placeholder={currentDefaults.groupCount || t.groupPlaceholder}
                   className="w-full h-[38px] bg-gray-50 border border-gray-300 rounded-lg px-3 text-xs focus:ring-1 focus:ring-[#2E5A44] focus:outline-none box-border"
                 />
               </div>
@@ -342,7 +343,7 @@ export const ObservationModule: React.FC<ObservationModuleProps> = ({
                   type="text"
                   value={weather}
                   onChange={(e) => setWeather(e.target.value)}
-                  placeholder={t.weatherPlaceholder}
+                  placeholder={currentDefaults.weather || t.weatherPlaceholder}
                   className="w-full h-[38px] bg-gray-50 border border-gray-300 rounded-lg px-3 text-xs focus:ring-1 focus:ring-[#2E5A44] focus:outline-none box-border"
                 />
               </div>
@@ -366,12 +367,12 @@ export const ObservationModule: React.FC<ObservationModuleProps> = ({
                   {t.notesHint}
                 </span>
               </div>
-              <textarea
-                rows={7}
+              <AutoResizeTextarea
+                minRows={6}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder={t.notesPlaceholder}
-                className="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-xs leading-relaxed focus:bg-white focus:border-[#2E5A44] focus:outline-none font-mono"
+                placeholder={currentDefaults.notes || t.notesPlaceholder}
+                className="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-xs leading-relaxed focus:bg-white focus:border-[#2E5A44] focus:outline-none font-mono transition-all"
               />
             </div>
 
@@ -393,12 +394,12 @@ export const ObservationModule: React.FC<ObservationModuleProps> = ({
                   {t.reflectionHint}
                 </span>
               </div>
-              <textarea
-                rows={4}
+              <AutoResizeTextarea
+                minRows={4}
                 value={reflection}
                 onChange={(e) => setReflection(e.target.value)}
-                placeholder={t.reflectionPlaceholder}
-                className="w-full bg-[#F4F7F5] border border-gray-300 rounded-lg p-3 text-xs leading-relaxed focus:bg-white focus:border-[#2E5A44] focus:outline-none"
+                placeholder={currentDefaults.reflection || t.reflectionPlaceholder}
+                className="w-full bg-[#F4F7F5] border border-gray-300 rounded-lg p-3 text-xs leading-relaxed focus:bg-white focus:border-[#2E5A44] focus:outline-none transition-all"
               />
             </div>
 

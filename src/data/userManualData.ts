@@ -24,12 +24,12 @@ export interface UserManualContent {
 export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
   ro: {
     title: 'MANUAL DE UTILIZARE ȘI GHID DE INSTALARE',
-    subtitle: 'Aplicația Pedagogică Assistant Montessori (bazat pe principiile modelului educațional Montessori)',
+    subtitle: 'Aplicația Pedagogică Asistent Montessori (bazat pe principiile modelului educațional Montessori)',
     version: 'Versiunea 2.4 (Ediție Oficială)',
     date: 'Septembrie 2026',
     institution: "L'École des Préalpes • Châtel-St-Denis",
     author: 'Creat de STEC Studio și integrat cu Google Gemini AI Studio',
-    intro: 'Acest manual oferă un ghid complet de operare și instalare pentru aplicația Assistant Montessori. Sistemul a fost conceput special pentru asistenți, ghizi și stagiari Montessori, integrând protocolul de 20 de ore de observație practică (bazat pe principiile modelului educațional Montessori), planificarea lecțiilor pe modelul celor 5 elemente, Masa Păcii, dicționarul doctrinar și asistența pedagogică oferită de Google Gemini AI Studio.',
+    intro: 'Acest manual oferă un ghid complet de operare și instalare pentru aplicația Asistent Montessori. Sistemul a fost conceput special pentru asistenți, ghizi și stagiari Montessori, integrând protocolul zilnic de observație practică (bazat pe principiile modelului educațional Montessori), planificatorul de prezentări structurat pe toate etapele pedagogice, Masa Păcii, dicționarul doctrinar și asistența pedagogică oferită de Google Gemini AI Studio.',
     sections: [
       {
         id: 'install',
@@ -75,7 +75,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
             items: [
               'Deschideți Google Chrome sau Microsoft Edge.',
               'În partea dreaptă a barei de adrese URL, veți vedea o mică pictogramă de instalare (un ecran cu o săgeată în jos).',
-              'Apăsați pe pictogramă și alegeți „Instalează Assistant Montessori”.',
+              'Apăsați pe pictogramă și alegeți „Instalează Asistent Montessori”.',
               'Aplicația va fi adăugată în meniul Start / Applications și pe desktop, deschizându-se ca o aplicație de sine stătătoare.'
             ],
           },
@@ -99,7 +99,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
           {
             subtitle: 'Funcționalități principale ale Hub-ului:',
             items: [
-              'Sumar Progres Observații: Afișează numărul de ore de observație acumulate din totalul de 20 de ore (bazat pe principiile modelului educațional Montessori).',
+              'Sumar Progres Observații: Afișează numărul de ore și sesiuni de observație acumulate (bazat pe principiile modelului educațional Montessori).',
               'Rutinele de Mediu Pregătit: Listă de verificare interactivă (Verificarea materialelor, aranjarea rafturilor, Masa Păcii, plantele clasei, etc.).',
               'Note Rapide de Zi: Posibilitatea de a nota instantaneu comportamente spontane, izbucniri de concentrare sau mici incidente.',
               'Acces Rapid la Rapoarte și Ghiduri: Butoane directe către generarea de fișe oficiale și descărcarea manualului.'
@@ -109,7 +109,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
       },
       {
         id: 'observation',
-        title: '3. PROTOCOLUL DE 20 DE ORE DE OBSERVAȚIE PRACTICĂ (BAZAT PE PRINCIPIILE MODELULUI EDUCAȚIONAL MONTESSORI)',
+        title: '3. PROTOCOLUL ZILNIC DE OBSERVAȚIE PRACTICĂ (BAZAT PE PRINCIPIILE MODELULUI EDUCAȚIONAL MONTESSORI)',
         content: [
           'Observația științifică, riguroasă și lipsită de prejudecăți este temelia metodei create de Dr. Maria Montessori. Modulul de Observație ghidează asistentul pas cu pas prin cele 4 etape obligatorii:',
         ],
@@ -136,19 +136,21 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
       },
       {
         id: 'lesson',
-        title: '4. PLANIFICATORUL DE LECȚII PE MODELUL CELOR 5 ELEMENTE',
+        title: '4. PLANIFICATORUL DE PREZENTĂRI MONTESSORI',
         content: [
-          'Planificatorul structurează orice prezentare Montessori conform celor 5 componente esențiale:',
+          'Planificatorul structurează orice prezentare Montessori conform reperelor pedagogice esențiale:',
         ],
         subsections: [
           {
-            subtitle: 'Cele 5 Elemente Fundamentale:',
+            subtitle: 'Elementele Fundamentale ale Prezentării:',
             items: [
-              '1. Referință Album Montessori: Specificarea exactă a albumului și paginii (ex. Album Matematică Casa dei Bambini).',
-              '2. Scop Direct & Indirect: Claritatea obiectivului imediat (izolarea dificultății) și a pregătirii cognitive pe termen lung.',
-              '3. Întrebări de Gândire de Nivel Superior (HOTS): Formulate pe baza taxonomiei Bloom revizuite (Analiză, Evaluare, Sinteză).',
-              '4. Activități de Urmare (Follow-up Works): Exerciții de practică repetată și extensii creative / de cercetare.',
-              '5. Punct de Interes & Materiale: Elementul senzorial sau mecanic care atrage atenția copilului și asigură controlul erorii.'
+              '1. Titlu și Domeniu de Activitate: Viață Practică, Senzorial, Limbaj, Matematică, Științe etc.',
+              '2. Grupa de Vârstă și Timp Alocat: Stabilirea duratei optime pentru nivelul copilului.',
+              '3. Material Necesar și Punct de Interes: Pregătirea mediului și elementul cheie ce captează atenția copilului.',
+              '4. Obiectiv Direct și Indirect: Claritatea scopului imediat (izolarea dificultății) și a pregătirii cognitive pe termen lung.',
+              '5. Desfășurare Lecție (Bullet Points): Pașii secvențiali, clari și ordonați de prezentare a materialului.',
+              '6. Propuneri de Follow-up Work & Transdisciplinar: Lucru individual repetat și conexiuni interdisciplinare.',
+              '7. Curriculum par Niveaux de Développement: Parcurs curricular structurat pe cele 4 niveluri de dezvoltare (0-3, 3-6, 6-9, 9-12 ani).'
             ],
           },
           {
@@ -235,7 +237,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
             subtitle: 'Tipuri de documente disponibile:',
             items: [
               'Fișă Individuală de Observație Practică: cuprinde datele sesiunii, mediul, notițele factuale și reflecția.',
-              'Fișă de Prezentare Lecție: fișa completă pe cele 5 elemente de planificare, pregătită pentru dosarul de album.',
+              'Fișă de Prezentare: plan complet de prezentare cu obiective, materiale, desfășurare cu pași și propuneri de follow-up.',
               'Raport Săptămânal de Sinteză: include stadiul orelor efectuate, sinteza activităților și semnăturile coordonatorilor.'
             ],
           },
@@ -259,7 +261,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
     date: "Septembre 2026",
     institution: "L'École des Préalpes • Châtel-St-Denis",
     author: "Créé par STEC Studio et intégré avec Google Gemini AI Studio",
-    intro: "Ce manuel offre un guide complet d'utilisation et d'installation pour l'application Assistant Montessori. L'outil est spécialement conçu pour les assistants, éducateurs et stagiaires Montessori, intégrant le protocole officiel de 20 heures d'observation pratique (basé sur les principes du modèle éducatif Montessori), la planification en 5 éléments, la Table de la Paix, le dictionnaire doctrinal et l'assistance pédagogique Gemini AI.",
+    intro: "Ce manuel offre un guide complet d'utilisation et d'installation pour l'application Assistant Montessori. L'outil est spécialement conçu pour les assistants, éducateurs et stagiaires Montessori, intégrant le protocole quotidien d'observation pratique (basé sur les principes du modèle éducatif Montessori), la planification en 5 éléments, la Table de la Paix, le dictionnaire doctrinal et l'assistance pédagogique Gemini AI.",
     sections: [
       {
         id: 'install',
@@ -326,7 +328,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
           {
             subtitle: "Éléments clés :",
             items: [
-              "Suivi des 20 Heures : Visualisation en temps réel du quota d'observation réalisé.",
+              "Suivi des Observations : Visualisation en temps réel du quota d'observation réalisé.",
               "Routines de l'Ambiance Préparée : Contrôle des étagères, propreté, plantes, Table de la Paix.",
               "Notes Rapides : Enregistrement spontané des étincelles de concentration ou interactions notables.",
               "Accès direct aux exports PDF et fiches officielles."
@@ -336,7 +338,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
       },
       {
         id: 'observation',
-        title: "3. PROTOCOLE DES 20 HEURES D'OBSERVATION PRATIQUE (BASÉ SUR LES PRINCIPES DU MODÈLE ÉDUCATIF MONTESSORI)",
+        title: "3. PROTOCOLE QUOTIDIEN D'OBSERVATION PRATIQUE (BASÉ SUR LES PRINCIPES DU MODÈLE ÉDUCATIF MONTESSORI)",
         content: [
           "L'observation scientifique et bienveillante sans jugement est la pierre angulaire de la méthode Montessori.",
         ],
@@ -362,19 +364,21 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
       },
       {
         id: 'lesson',
-        title: "4. PLANIFICATEUR DE LEÇONS EN 5 ÉLÉMENTS",
+        title: "4. PLANIFICATEUR DE PRÉSENTATIONS MONTESSORI",
         content: [
-          "Ce module structure chaque présentation selon la méthodologie reconnue des 5 éléments.",
+          "Ce module structure chaque présentation selon les repères pédagogiques Montessori essentiels :",
         ],
         subsections: [
           {
-            subtitle: "Les 5 Éléments Fondamentaux :",
+            subtitle: "Éléments Fondamentaux de la Présentation :",
             items: [
-              "1. Référence d'Album Montessori (page et volume précis).",
-              "2. But Direct (Direct Aim) & Buts Indirects (Indirect Aims).",
-              "3. Questions de Pensée Supérieure (HOTS - Taxonomie de Bloom).",
-              "4. Travaux de Suivi (Follow-up Works - répétition et extension créative).",
-              "5. Point d'Intérêt & Matériel Requis (contrôle de l'erreur intégré)."
+              "1. Titre et Domaine d'Activité : Vie Pratique, Sensoriel, Langage, Mathématiques, Sciences etc.",
+              "2. Groupe d'Âge et Temps Alloué : Définition de la durée optimale pour le niveau de l'enfant.",
+              "3. Matériel Requis et Point d'Intérêt : Préparation de l'ambiance et élément clé captivant l'attention.",
+              "4. Objectif Direct (Direct Aim) & Indirect (Indirect Aim).",
+              "5. Déroulement de la Leçon (Bullet Points) : Étapes séquentielles claires et ordonnées de présentation.",
+              "6. Propositions de Travaux de Suivi (Follow-up Work & Transdisciplinaire).",
+              "7. Curriculum par Niveaux de Développement : Guide approfondi de 0 à 12 ans (Nido, 3-6, 6-9, 9-12 ans)."
             ],
           },
           {
@@ -429,12 +433,12 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
 
   en: {
     title: "USER MANUAL AND INSTALLATION GUIDE",
-    subtitle: "Assistant Montessori Pedagogical Application (based on the principles of the Montessori educational model)",
+    subtitle: "Montessori Assistant Pedagogical Application (based on the principles of the Montessori educational model)",
     version: "Version 2.4 (Official Edition)",
     date: "September 2026",
     institution: "L'École des Préalpes • Châtel-St-Denis",
     author: "Created by STEC Studio and integrated with Google Gemini AI Studio",
-    intro: "This manual provides comprehensive operational and installation instructions for the Assistant Montessori application. Tailored for Montessori assistants, guides, and trainees, it integrates the 20-Hour Observation Protocol (based on the principles of the Montessori educational model), the 5-Element Lesson Planning model, the Peace Table, doctrinal dictionary, and Google Gemini AI pedagogical coaching.",
+    intro: "This manual provides comprehensive operational and installation instructions for the Montessori Assistant application. Tailored for Montessori assistants, guides, and trainees, it integrates the Daily Practical Observation Protocol (based on the principles of the Montessori educational model), the 5-Element Lesson Planning model, the Peace Table, doctrinal dictionary, and Google Gemini AI pedagogical coaching.",
     sections: [
       {
         id: 'install',
@@ -478,7 +482,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
             items: [
               "Open the URL in Google Chrome or Microsoft Edge on your computer.",
               "Click the install icon located on the right side of the browser address bar.",
-              "Click «Install Assistant Montessori».",
+              "Click «Install Montessori Assistant».",
               "The app runs in its own window with dedicated desktop and start menu shortcuts."
             ],
           },
@@ -502,7 +506,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
           {
             subtitle: "Key Highlights:",
             items: [
-              "20-Hour Progress Tracker: Visual indicator of completed observation hours (based on the principles of the Montessori educational model).",
+              "Observation Progress Tracker: Visual indicator of completed observation hours and sessions (based on the principles of the Montessori educational model).",
               "Prepared Environment Routines: Interactive daily checklist (shelf readiness, botany care, Peace Table).",
               "Quick Notes: Rapid clinical documentation of student concentration and milestones.",
               "Direct access to PDF reports and user guide downloads."
@@ -512,7 +516,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
       },
       {
         id: 'observation',
-        title: "3. 20-HOUR PRACTICAL OBSERVATION PROTOCOL (BASED ON THE PRINCIPLES OF THE MONTESSORI EDUCATIONAL MODEL)",
+        title: "3. DAILY PRACTICAL OBSERVATION PROTOCOL (BASED ON THE PRINCIPLES OF THE MONTESSORI EDUCATIONAL MODEL)",
         content: [
           "Scientific, objective, non-judgmental observation is the core foundation of Montessori education.",
         ],
@@ -605,12 +609,12 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
 
   de: {
     title: "BENUTZERHANDBUCH UND INSTALLATIONSANLEITUNG",
-    subtitle: "Pädagogische Anwendung Assistant Montessori (basierend auf den Prinzipien des Montessori-Bildungsmodells)",
+    subtitle: "Pädagogische Anwendung Montessori Assistent (basierend auf den Prinzipien des Montessori-Bildungsmodells)",
     version: "Version 2.4 (Offizielle Ausgabe)",
     date: "September 2026",
     institution: "L'École des Préalpes • Châtel-St-Denis",
     author: "Erstellt von STEC Studio und integriert mit Google Gemini AI Studio",
-    intro: "Dieses Handbuch bietet eine umfassende Anleitung für die Nutzung und Installation der Anwendung Assistant Montessori. Das System unterstützt Montessori-Assistenten, Pädagogen und Praktikanten mit dem 20-Stunden-Beobachtungsprotokoll (basierend auf den Prinzipien des Montessori-Bildungsmodells), der 5-Elemente-Lektionsplanung, dem Friedenstisch, dem Doktrin-Wörterbuch und pädagogischer KI-Unterstützung.",
+    intro: "Dieses Handbuch bietet eine umfassende Anleitung für die Nutzung und Installation der Anwendung Montessori Assistent. Das System unterstützt Montessori-Assistenten, Pädagogen und Praktikanten mit dem täglichen praktischen Beobachtungsprotokoll (basierend auf den Prinzipien des Montessori-Bildungsmodells), der 5-Elemente-Lektionsplanung, dem Friedenstisch, dem Doktrin-Wörterbuch und pädagogischer KI-Unterstützung.",
     sections: [
       {
         id: 'install',
@@ -653,7 +657,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
             items: [
               "Öffnen Sie die Seite in Chrome oder Edge.",
               "Klicken Sie rechts in der Adressleiste auf das Installationssymbol (Bildschirm mit Pfeil nach unten).",
-              "Klicken Sie auf «Assistant Montessori installieren».",
+              "Klicken Sie auf «Montessori Assistent installieren».",
               "Die App wird als eigenständiges Programm auf Ihrem Rechner eingerichtet."
             ],
           },
@@ -677,7 +681,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
           {
             subtitle: "Hauptfunktionen:",
             items: [
-              "20-Stunden-Fortschrittsanzeige (basierend auf den Prinzipien des Montessori-Bildungsmodells).",
+              "Beobachtungs-Fortschrittsanzeige (basierend auf den Prinzipien des Montessori-Bildungsmodells).",
               "Checkliste für die vorbereitete Umgebung (Regalordnung, Friedenstisch, Pflege).",
               "Schnelle Notizen für spontane Konzentrationsphasen.",
               "Direkter Zugriff auf PDF-Berichte und das Benutzerhandbuch."
@@ -687,7 +691,7 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
       },
       {
         id: 'observation',
-        title: "3. 20-STUNDEN-BEOBACHTUNGSPROTOKOLL (BASIEREND AUF DEN PRINZIPIEN DES MONTESSORI-BILDUNGSMODELLS)",
+        title: "3. TÄGLICHES PRAKTISCHES BEOBACHTUNGSPROTOKOLL (BASIEREND AUF DEN PRINZIPIEN DES MONTESSORI-BILDUNGSMODELLS)",
         content: [
           "Objektive, wissenschaftliche und wertfreie Beobachtung ist das Fundament der Montessori-Pädagogik.",
         ],
@@ -705,19 +709,21 @@ export const USER_MANUAL_DATA: Record<Language, UserManualContent> = {
       },
       {
         id: 'lesson',
-        title: "4. 5-ELEMENTE-LEKTIONSPLANER",
+        title: "4. MONTESSORI-DARBIETUNGSPLANER",
         content: [
-          "Strukturierte Vorbereitung jeder Montessori-Darbietung nach den 5 Elementen:",
+          "Strukturierte Vorbereitung jeder Montessori-Darbietung nach den wesentlichen pädagogischen Kriterien:",
         ],
         subsections: [
           {
-            subtitle: "Die 5 Kernelemente:",
+            subtitle: "Kernelemente der Darbietung:",
             items: [
-              "1. Album-Referenz (präzise Quellenangabe).",
-              "2. Direktes Ziel & Indirekte Ziele.",
-              "3. Höhere Denkfragen (HOTS - nach Bloom).",
-              "4. Folgearbeiten (Wiederholungs- und Forschungsarbeiten).",
-              "5. Interessenspunkt & Benötigte Materialien (interne Fehlerkontrolle)."
+              "1. Titel & Fachbereich: Übungen des täglichen Lebens, Sinnesmaterial, Sprache, Mathematik, Kosmische Erziehung etc.",
+              "2. Altersgruppe & Zeitaufwand: Festlegung der optimalen Dauer für die Entwicklungsstufe.",
+              "3. Benötigte Materialien & Punkt des Interesses: Vorbereitung der Umgebung und fesselndes Schlüsselelement.",
+              "4. Direktes Ziel & Indirektes Ziel: Klare Isolation der Schwierigkeit und langfristige kognitive Vorbereitung.",
+              "5. Ablauf der Darbietung (Bullet Points): Sequenzielle, klare und geordnete Präsentationsschritte.",
+              "6. Vorschläge für Folgearbeiten (Follow-up Work & Fächerübergreifend).",
+              "7. Entwicklungsstufen-Curriculum (0-3, 3-6, 6-9, 9-12 Jahre)."
             ],
           },
         ],

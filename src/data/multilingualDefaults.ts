@@ -103,72 +103,102 @@ export const MULTILINGUAL_OBS_DEFAULTS: Record<Language, {
 export const MULTILINGUAL_LESSON_FORM_DEFAULTS: Record<Language, {
   title: string;
   subject: string;
+  ageGroup: string;
   level: string;
-  albumRef: string;
-  directAim: string;
-  indirectAims: string;
-  hots1: string;
-  hots2: string;
-  follow1: string;
-  follow2: string;
+  duration: string;
   materials: string;
   pointOfInterest: string;
+  directAim: string;
+  indirectAim: string;
+  procedure: string;
+  followUpWork: string;
+  crossCurricular: string;
+  albumRef?: string;
+  indirectAims?: string;
+  hots1?: string;
+  hots2?: string;
+  follow1?: string;
+  follow2?: string;
 }> = {
   ro: {
     title: 'Memorarea Adunării: Familiile de Numere',
     subject: 'Matematică',
-    level: 'Casa dei Bambini (5-6 ani) / Primar',
-    albumRef: 'Album Matematică Montessori, pp. 210-215',
-    directAim: 'Înțelegerea procesului de adunare a numerelor mari cu trecere peste ordin.',
-    indirectAims: 'Dezvoltarea ordinii mentale, acuratețea notației matematice și concentrarea.',
-    hots1: 'Cum ne ajută alinierea pe coloane (unități, zeci, sute) să nu ne rătăcim în calcul?',
-    hots2: 'Ce s-ar întâmpla dacă am începe adunarea de la mii în loc de la unități? Este posibil?',
-    follow1: 'Rezolvarea a 4 probleme cu numere din 4 cifre folosind foaia cu caroiaj.',
-    follow2: 'Compoziția unei povești cu o expediție în care exploratorii adună resurse din diferite orașe.',
-    materials: 'Tabla punctelor din lemn, carioci colorate (verde, albastru, roșu), riglă, fișe.',
-    pointOfInterest: 'Gruparea a 10 puncte într-un cerculeț și transformarea într-un punct pe coloana următoare.',
+    ageGroup: 'Casa dei Bambini (4.5 – 6 ani)',
+    level: 'Casa dei Bambini (4.5 – 6 ani)',
+    duration: '15 – 20 minute',
+    materials: 'Tabla degetelor pentru adunare, benzi de lemn (roșii și albastre), carnet cu ecuații, creioane colorate.',
+    pointOfInterest: 'Punctul de întâlnire al celor două degete pe tablă pentru găsirea sumei exacte.',
+    directAim: 'Memorarea combinațiilor fundamentale ale adunării cu sume între 2 și 18.',
+    indirectAim: 'Dezvoltarea raționamentului abstract, autodisciplina și plăcerea calculului mental spontan.',
+    procedure: '• Invitație: Ghidul invită 1-2 copii la covoraș pentru explorarea familiilor de numere.\n• Pregătire: Aducerea tăvii cu tabla adunării și a benzilor de lemn pe covorașul de lucru.\n• Prezentare demonstrativă: Ghidul așază banda albastră (ex: 4) și banda roșie (ex: 6). Arată cum capătul benzii indică suma 10.\n• Controlul erorii: Numărarea pătrățelelor de pe banda superioară sau consultarea tabelei de control.\n• Încheiere: Copilul notează operația pe carnet, iar materialele sunt aranjate în ordine și returnate la raft.',
+    followUpWork: '• Rezolvarea a 10 operații cu tabla degetelor pentru adunare și notarea lor pe carnetul cu pătrățele.\n• Crearea propriei cărticele ilustrate cu «Familiile Numărului 10» (ex: 1+9, 2+8, 3+7 etc.).',
+    crossCurricular: '• Conexiune cu Arta: Desenarea unui copac al numerelor unde ramurile reprezintă perechile ce formează 10.\n• Conexiune cu Științele Naturale: Numărarea și sortarea frunzelor din grădină în perechi de zece.',
+    albumRef: '',
+    indirectAims: 'Dezvoltarea raționamentului abstract și calculul mental.',
+    hots1: 'Cum ne ajută alinierea pe coloane?',
+    hots2: 'Ce s-ar întâmpla dacă începem de la zeci?',
+    follow1: 'Rezolvarea a 10 operații pe carnet.',
+    follow2: 'Cărticică ilustrată cu Familiile lui 10.',
   },
   fr: {
     title: 'Mémorisation de l’Addition : Les Familles de Nombres',
     subject: 'Mathématiques',
-    level: 'Maison des Enfants (5-6 ans) / Primaire',
-    albumRef: 'Album Mathématiques Montessori, pp. 210-215',
-    directAim: 'Compréhension du processus d’addition des grands nombres avec retenue.',
-    indirectAims: 'Développement de l’ordre mental, rigueur de la notation mathématique et concentration.',
-    hots1: 'Comment l’alignement par hiérarchies (unités, dizaines, centaines) évite-t-il les erreurs de calcul ?',
-    hots2: 'Que se passerait-il si l’on commençait l’addition par les milliers au lieu des unités ? Est-ce possible ?',
-    follow1: 'Résolution de 4 opérations à 4 chiffres sur papier quadrillé spécialisé.',
-    follow2: 'Rédaction d’un récit d’expédition où les explorateurs regroupent les provisions des cités.',
-    materials: 'Table des points en bois, feutres hiérarchiques (vert, bleu, rouge), règle, fiches.',
-    pointOfInterest: 'Le groupement de 10 points dans un cercle et leur transformation en un point sur la colonne suivante.',
+    ageGroup: 'Maison des Enfants (4.5 – 6 ans)',
+    level: 'Maison des Enfants (4.5 – 6 ans)',
+    duration: '15 – 20 minutes',
+    materials: 'Tableau des doigts pour l’addition, bandes de bois (rouges et bleues), carnet d’équations, crayons.',
+    pointOfInterest: 'Le point de rencontre des deux index sur la grille pour découvrir la somme exacte.',
+    directAim: 'Mémorisation des combinaisons essentielles de l’addition avec sommes entre 2 et 18.',
+    indirectAim: 'Développement de l’abstraction, autodiscipline et joie du calcul mental spontané.',
+    procedure: '• Invitation : Le guide invite l’enfant au tapis pour explorer les familles de nombres.\n• Préparation : Transport doux du plateau avec le tableau et les réglettes de bois.\n• Présentation : Le guide place la réglette bleue (ex: 4) puis la rouge (ex: 6) et montre le total 10.\n• Contrôle de l’erreur : Vérification sur la grille de contrôle n° 1.\n• Clôture : Notation sur le livret personnel et retour soigneux du matériel sur l’étagère.',
+    followUpWork: '• Résolution de 10 opérations avec le tableau des doigts et notation sur cahier quadrillé.\n• Création d’un livret illustré des « Familles du Nombre 10 ».',
+    crossCurricular: '• Lien Artistique : Dessin de l’arbre des nombres avec feuilles par paires de dix.\n• Lien Botanique : Comptage et regroupement de feuilles ramassées dans le parc.',
+    albumRef: '',
+    indirectAims: 'Développement de l’ordre mental et rigueur mathématique.',
+    hots1: 'Comment compares-tu l’addition à la multiplication ?',
+    hots2: 'Combien de façons trouves-tu pour atteindre 12 ?',
+    follow1: 'Résolution de 10 opérations sur cahier.',
+    follow2: 'Livret des Familles du Nombre 10.',
   },
   en: {
     title: 'Addition Fact Memorization: Number Families',
     subject: 'Mathematics',
-    level: 'Children’s House (5-6 yrs) / Elementary',
-    albumRef: 'Montessori Mathematics Album, pp. 210-215',
-    directAim: 'Understanding dynamic addition of large numbers with regrouping.',
-    indirectAims: 'Development of mental order, mathematical notation accuracy, and concentration.',
-    hots1: 'How does columnar alignment (units, tens, hundreds) prevent calculation errors?',
-    hots2: 'What would happen if we began adding from the thousands instead of units? Is it possible?',
-    follow1: 'Solving 4 four-digit addition problems on grid paper.',
-    follow2: 'Writing an expedition story where explorers gather supplies across cities.',
-    materials: 'Wooden Dot Game board, hierarchical colored markers (green, blue, red), ruler, slips.',
-    pointOfInterest: 'Circling a group of 10 dots and transforming them into a single dot in the next column.',
+    ageGroup: 'Children’s House (4.5 – 6 yrs)',
+    level: 'Children’s House (4.5 – 6 yrs)',
+    duration: '15 – 20 minutes',
+    materials: 'Addition Finger Chart, wooden strips (red and blue), equation booklet, colored pencils.',
+    pointOfInterest: 'The meeting point of the two index fingers on the chart grid discovering the exact sum.',
+    directAim: 'Memorization of basic addition facts with sums between 2 and 18.',
+    indirectAim: 'Development of abstract mathematical reasoning, self-discipline, and spontaneous mental math.',
+    procedure: '• Invitation: The Guide invites the child to roll a mat for an addition exploration.\n• Preparation: Carrying the chart board and strip box with two hands to the work area.\n• Demonstration: The Guide places the blue strip (e.g., 4) and red strip (e.g., 6) pointing out the sum 10.\n• Control of Error: Counting squares on the top ledger or verifying with Control Chart 1.\n• Conclusion: The child records combinations in their booklet, then returns material to shelf.',
+    followUpWork: '• Solving 10 equations using the Finger Chart and recording in a grid math notebook.\n• Creating an illustrated booklet of "Number 10 Families".',
+    crossCurricular: '• Art Connection: Drawing a number family tree with leaves grouped in pairs of 10.\n• Botany Connection: Classifying and pairing garden seeds into sets of ten.',
+    albumRef: '',
+    indirectAims: 'Mathematical precision and mental calculation.',
+    hots1: 'How does columnar alignment prevent errors?',
+    hots2: 'What happens if we begin from tens instead of units?',
+    follow1: 'Solving 10 problems on grid paper.',
+    follow2: 'Illustrated booklet of Number 10 Families.',
   },
   de: {
     title: 'Memorieren der Addition: Die Zahlenfamilien',
     subject: 'Mathematik',
-    level: 'Kinderhaus (5-6 J.) / Primarstufe',
-    albumRef: 'Montessori Mathematik-Album, S. 210-215',
-    directAim: 'Verständnis der mehrstelligen Addition mit Zehnerübergang.',
-    indirectAims: 'Förderung der inneren Ordnung, mathematische Genauigkeit und Konzentration.',
-    hots1: 'Wie hilft die stellenwertgerechte Anordnung (Einer, Zehner, Hunderter), Rechenfehler zu vermeiden?',
-    hots2: 'Was würde passieren, wenn wir bei den Tausendern statt bei den Einern beginnen? Ist das möglich?',
-    follow1: 'Lösen von 4 vierstelligen Aufgaben auf speziellem Rechenpapier.',
-    follow2: 'Schreiben einer Expeditionsgeschichte, bei der Vorräte gesammelt und summiert werden.',
-    materials: 'Punktebrett aus Holz, hierarchische Farbstifte (grün, blau, rot), Lineal, Aufgabenblätter.',
-    pointOfInterest: 'Das Einkreisen von 10 Punkten und Umwandeln in einen Punkt auf der nächsten Spalte.',
+    ageGroup: 'Kinderhaus (4.5 – 6 J.)',
+    level: 'Kinderhaus (4.5 – 6 J.)',
+    duration: '15 – 20 Minuten',
+    materials: 'Additions-Fingerkartei, Holzstreifen (rot und blau), Gleichungsheft, Farbstifte.',
+    pointOfInterest: 'Der Treffpunkt der beiden Zeigefinger auf dem Raster zur Ermittlung der Summe.',
+    directAim: 'Memorieren der grundlegenden Additionsaufgaben mit Summen zwischen 2 und 18.',
+    indirectAim: 'Entwicklung der Abstraktionsfähigkeit, Selbstdisziplin und Freude am Kopfrechnen.',
+    procedure: '• Einladung: Die Lehrkraft lädt 1-2 Kinder an den Arbeitsteppich ein.\n• Vorbereitung: Behutsames Holen des Tabletts mit der Additionskartei und den Streifen.\n• Darbietung: Die Lehrkraft legt den blauen Streifen (z.B. 4) und den roten (z.B. 6) an und zeigt Summe 10.\n• Fehlerkontrolle: Abzählen der Felder auf der oberen Leiste oder Kontrolltafel 1.\n• Abschluss: Kind notiert Aufgaben im Heft, räumt Material ordentlich ins Regal zurück.',
+    followUpWork: '• Lösen von 10 Aufgaben mit der Fingerkartei und Eintragung im Rechenheft.\n• Erstellen eines eigenen Mini-Büchleins «Zahlenfamilien der 10».',
+    crossCurricular: '• Kunst-Verbindung: Malen eines Zahlenbaums mit Blätterpaaren der 10.\n• Naturkunde: Sammeln und Bündeln von Waldfrüchten in Zehnerpaaren.',
+    albumRef: '',
+    indirectAims: 'Förderung der inneren Ordnung und mathematischen Genauigkeit.',
+    hots1: 'Wie hilft die stellenwertgerechte Anordnung?',
+    hots2: 'Was passiert beim Beginn bei den Zehnern?',
+    follow1: 'Lösen von 10 Aufgaben im Heft.',
+    follow2: 'Mini-Büchlein der Zahlenfamilien.',
   },
 };
 

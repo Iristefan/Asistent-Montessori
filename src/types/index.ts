@@ -27,20 +27,29 @@ export interface ObservationSession {
 
 export interface LessonPlan {
   id: string;
-  title: string;
-  subject: string;
-  level: string;
-  albumRef: string;
-  directAim: string;
-  indirectAims?: string;
-  hots1: string; // Analiză / Comparare
-  hots2: string; // Evaluare / Creație
-  follow1: string; // Practică / Replicare cu materialul
-  follow2: string; // Aplicație / Extindere creativă
-  materials?: string;
-  pointOfInterest?: string;
+  title: string; // Titlu prezentare
+  subject: string; // Domeniu de activitate
+  ageGroup: string; // Grupa de vârstă
+  level?: string; // Backward compatibility
+  duration: string; // Timpul alocat (ex: "15 - 20 minute")
+  materials: string; // Material necesar pentru prezentare
+  pointOfInterest: string; // Punct de interes
+  directAim: string; // Obiectiv direct
+  indirectAim: string; // Obiectiv indirect
+  procedure: string; // Desfășurare lecție cu bullet points
+  followUpWork: string; // Propuneri de follow up work
+  crossCurricular: string; // Propuneri de follow up work transdisciplinar
+  albumRef?: string; // Deprecated
+  indirectAims?: string; // Deprecated
+  hots1?: string; // Deprecated
+  hots2?: string; // Deprecated
+  follow1?: string; // Deprecated
+  follow2?: string; // Deprecated
   createdAt: number;
 }
+
+export type PresentationPlan = LessonPlan;
+
 
 export interface QuickDailyNote {
   id: string;

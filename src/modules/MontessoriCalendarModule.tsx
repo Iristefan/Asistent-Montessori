@@ -63,7 +63,7 @@ export const MontessoriCalendarModule: React.FC<MontessoriCalendarModuleProps> =
 
   // Birthday Walk Modal / Panel State
   const [isBirthdayPanelOpen, setIsBirthdayPanelOpen] = useState(false);
-  const [birthdayChildName, setBirthdayChildName] = useState('Luca');
+  const [birthdayChildName, setBirthdayChildName] = useState('');
   const [birthdayTurningAge, setBirthdayTurningAge] = useState(4);
   const [birthdayDate, setBirthdayDate] = useState(new Date().toISOString().split('T')[0]);
   const [activeWalkStep, setActiveWalkStep] = useState(1);
